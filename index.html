@@ -209,6 +209,8 @@
   }
 
   body.mode-edit .item-box { cursor: move; }
+  body.mode-edit .mode-input-only { display: none !important; }
+  body.mode-input .mode-edit-only { display: none !important; }
   body.mode-edit .item-box.selected {
     outline: 1px solid #2563eb;
     z-index: 100;
@@ -468,11 +470,14 @@
     <button class="btn btn-mode-input" id="btn-toggle-mode" onclick="toggleMode()">🔒 入力モード (枠固定)</button>
     <button class="btn btn-amber" onclick="undoLastAction()">↩️ 戻す</button>
     <button class="btn btn-amber" onclick="redoNextAction()">▶️ 進む</button>
-    <button class="btn btn-indigo" onclick="openMasterModal()">📋 マスター管理</button>
-    <button class="btn btn-indigo" onclick="openStateModal()">💾 名前保存</button>
-    <button class="btn btn-indigo" onclick="openCalibModal()">🖨️ 印字位置補正</button>
-    <button class="btn btn-dark" id="btn-export-positions" onclick="exportPickerPositions()" style="display:none;">📋 配置情報をコピー</button>
-    <button class="btn btn-red" onclick="clearAllExceptEmitter()" title="排出事業者以外を全消去">🧹 排出者以外クリア</button>
+
+    <button class="btn btn-indigo mode-input-only" id="btn-master" onclick="openMasterModal()">📋 マスター管理</button>
+    <button class="btn btn-indigo mode-input-only" id="btn-save-state" onclick="openStateModal()">💾 名前保存</button>
+    <button class="btn btn-red mode-input-only" id="btn-clear-emitter" onclick="clearAllExceptEmitter()" title="排出事業者以外を全消去">🧹 排出者以外クリア</button>
+
+    <button class="btn btn-dark mode-edit-only" id="btn-reset-position" onclick="resetToDefaultPositions()">📍 初期位置に戻す</button>
+    <button class="btn btn-indigo mode-edit-only" id="btn-calib" onclick="openCalibModal()">🖨️ 印字位置補正</button>
+    <button class="btn btn-dark mode-edit-only" id="btn-export-positions" onclick="exportPickerPositions()">📋 配置情報をコピー</button>
 
     <!-- 書式設定 -->
     <div class="panel-group">
@@ -500,7 +505,7 @@
       </select>
     </div>
 
-    <button class="btn" id="btn-print" style="margin-left:auto; background:#f97316; color:#ffffff; border:2px solid #c2410c; font-size:14px; padding:9px 20px; border-radius:8px; box-shadow:0 3px 8px rgba(249,115,22,0.4);" onclick="printPage()">🖨️ 印刷する</button>
+    <button class="btn mode-input-only" id="btn-print" style="margin-left:auto; background:#f97316; color:#ffffff; border:2px solid #c2410c; font-size:14px; padding:9px 20px; border-radius:8px; box-shadow:0 3px 8px rgba(249,115,22,0.4);" onclick="printPage()">🖨️ 印刷する</button>
   </div>
 
   <div id="panel-spacer"></div>
@@ -1291,18 +1296,15 @@
       }
       isEditMode = !isEditMode;
       const btn = document.getElementById('btn-toggle-mode');
-      const exportBtn = document.getElementById('btn-export-positions');
       if (isEditMode) {
         document.body.className = 'mode-edit';
         btn.className = 'btn btn-mode-edit';
         btn.innerText = '🔓 編集モード (位置調整中)';
-        if (exportBtn) exportBtn.style.display = '';
       } else {
         document.body.className = 'mode-input';
         btn.className = 'btn btn-mode-input';
         btn.innerText = '🔒 入力モード (枠固定)';
         document.querySelectorAll('.item-box.selected').forEach(el => el.classList.remove('selected'));
-        if (exportBtn) exportBtn.style.display = 'none';
       }
     }
 
@@ -1535,6 +1537,23 @@
       renderStateList();
     }
 
+    function extractDataFromLayoutArray(layout) {
+      const data = {};
+      (layout || []).forEach(item => {
+        if ((item.type === 'input' || item.type === 'textarea') && item.id) {
+          data['val:' + item.id] = item.val || '';
+        }
+        if (item.type === 'circle') {
+          const key = 'circle:' + (item.groupName || '') + ':' + (item.text || '').trim();
+          data[key] = !!item.isActive;
+        }
+        if (item.type === 'slash' && item.id) {
+          data['slash:' + item.id] = !!item.hasSlash;
+        }
+      });
+      return data;
+    }
+
     function loadNamedState(name) {
       const states = getSavedStates();
       const state = states[name];
@@ -1544,8 +1563,8 @@
       if (state.data) {
         applyDataSnapshot(state.data);
       } else if (state.layout) {
-        // 旧形式（位置情報込み）の保存データへの後方互換
-        applyLayoutArray(state.layout);
+        // 旧形式（位置情報込み）の保存データでも、位置は絶対に反映せず内容だけ復元する
+        applyDataSnapshot(extractDataFromLayoutArray(state.layout));
       }
       saveLayoutAndBg(false);
       try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
@@ -1591,6 +1610,10 @@
     const PICKER_POS_KEY = 'manifest_picker_positions';
 
     function initFieldPickers() {
+      document.querySelectorAll('.field-picker').forEach(picker => {
+        picker.dataset.defaultLeft = parseFloat(picker.style.left) || 0;
+        picker.dataset.defaultTop = parseFloat(picker.style.top) || 0;
+      });
       applySavedPickerPositions();
       document.querySelectorAll('.field-picker').forEach(picker => {
         makeFieldPickerDraggable(picker);
@@ -1607,6 +1630,36 @@
           picker.style.top = saved[key].top + 'mm';
         }
       });
+    }
+
+    function resetToDefaultPositions() {
+      if (!confirm('すべての枠・▼ボタンの位置とサイズを初期状態に戻します。\n入力されている内容（会社名や数量など）は消えません。\n\nよろしいですか？')) return;
+      pushUndoState();
+
+      const defaultById = {};
+      masterDefaultLayout.forEach(item => { if (item.id) defaultById[item.id] = item; });
+      document.querySelectorAll('.item-box').forEach(box => {
+        const namedEl = box.querySelector('input, textarea, .slash-box');
+        const id = namedEl ? namedEl.id : '';
+        const def = id ? defaultById[id] : null;
+        if (def) {
+          box.style.left = def.x + 'mm';
+          box.style.top = def.y + 'mm';
+          box.style.width = def.w + 'mm';
+          box.style.height = def.h + 'mm';
+        }
+      });
+
+      document.querySelectorAll('.field-picker').forEach(picker => {
+        if (picker.dataset.defaultLeft !== undefined) {
+          picker.style.left = picker.dataset.defaultLeft + 'mm';
+          picker.style.top = picker.dataset.defaultTop + 'mm';
+        }
+      });
+      localStorage.removeItem(PICKER_POS_KEY);
+
+      saveLayoutAndBg(false);
+      showToast('📍 位置・サイズを初期状態に戻しました');
     }
 
     function savePickerPositions() {
@@ -2473,16 +2526,16 @@
           </tr>`;
         });
       } else if (activeTab === 'sites') {
-        html += `<th>表示名</th><th>正式現場名(事業場名)</th><th>郵便番号</th><th>所在地</th><th>電話番号</th><th>操作</th></tr></thead><tbody>`;
+        html += `<th>プルダウン表示名</th><th>正式現場名(事業場名)</th><th>郵便番号</th><th>所在地</th><th>電話番号</th><th>操作</th></tr></thead><tbody>`;
         items.forEach((item, i) => {
           html += `<tr>
-            <td><input class="col-medium" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)"></td>
-            <td><input class="col-wide" type="text" value="${item.siteName || ''}" onchange="updateMasterItem(${i}, 'siteName', this.value)"></td>
-            <td><input class="col-narrow" type="text" value="${item.zip || ''}" onchange="updateMasterItem(${i}, 'zip', this.value)"></td>
-            <td><input class="col-wide" type="text" value="${item.addr || ''}" onchange="updateMasterItem(${i}, 'addr', this.value)"></td>
-            <td><input class="col-narrow" type="text" value="${item.tel || ''}" onchange="updateMasterItem(${i}, 'tel', this.value)"></td>
+            <td><input class="col-medium" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'name')">📋</button></td>
+            <td><input class="col-wide" type="text" value="${item.siteName || ''}" onchange="updateMasterItem(${i}, 'siteName', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'siteName')">📋</button></td>
+            <td><input class="col-narrow" type="text" value="${item.zip || ''}" onchange="updateMasterItem(${i}, 'zip', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'zip')">📋</button></td>
+            <td><input class="col-wide" type="text" value="${item.addr || ''}" onchange="updateMasterItem(${i}, 'addr', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'addr')">📋</button></td>
+            <td><input class="col-narrow" type="text" value="${item.tel || ''}" onchange="updateMasterItem(${i}, 'tel', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'tel')">📋</button></td>
             <td style="white-space:nowrap;">
-              <button class="btn btn-dark" style="padding:2px 6px;" onclick="copyMasterItem(${i})">📋</button>
+              <button class="btn btn-dark" style="padding:2px 6px;" onclick="copyMasterItem(${i})">📋全部</button>
               <button class="btn btn-red" style="padding:2px 6px;" onclick="deleteMasterRow(${i})">🗑️</button>
             </td>
           </tr>`;
@@ -2506,16 +2559,16 @@
           </tr>`;
         });
       } else {
-        html += `<th>表示名</th><th>正式会社名</th><th>郵便番号</th><th>住所</th><th>電話番号</th><th>操作</th></tr></thead><tbody>`;
+        html += `<th>プルダウン表示名</th><th>会社名</th><th>郵便番号</th><th>住所</th><th>電話番号</th><th>操作</th></tr></thead><tbody>`;
         items.forEach((item, i) => {
           html += `<tr>
-            <td><input class="col-medium" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)"></td>
-            <td><input class="col-wide" type="text" value="${item.compName || ''}" onchange="updateMasterItem(${i}, 'compName', this.value)"></td>
-            <td><input class="col-narrow" type="text" value="${item.zip || ''}" onchange="updateMasterItem(${i}, 'zip', this.value)"></td>
-            <td><input class="col-wide" type="text" value="${item.addr || ''}" onchange="updateMasterItem(${i}, 'addr', this.value)"></td>
-            <td><input class="col-narrow" type="text" value="${item.tel || ''}" onchange="updateMasterItem(${i}, 'tel', this.value)"></td>
+            <td><input class="col-medium" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'name')">📋</button></td>
+            <td><input class="col-wide" type="text" value="${item.compName || ''}" onchange="updateMasterItem(${i}, 'compName', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'compName')">📋</button></td>
+            <td><input class="col-narrow" type="text" value="${item.zip || ''}" onchange="updateMasterItem(${i}, 'zip', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'zip')">📋</button></td>
+            <td><input class="col-wide" type="text" value="${item.addr || ''}" onchange="updateMasterItem(${i}, 'addr', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'addr')">📋</button></td>
+            <td><input class="col-narrow" type="text" value="${item.tel || ''}" onchange="updateMasterItem(${i}, 'tel', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'tel')">📋</button></td>
             <td style="white-space:nowrap;">
-              <button class="btn btn-dark" style="padding:2px 6px;" onclick="copyMasterItem(${i})">📋</button>
+              <button class="btn btn-dark" style="padding:2px 6px;" onclick="copyMasterItem(${i})">📋全部</button>
               <button class="btn btn-red" style="padding:2px 6px;" onclick="deleteMasterRow(${i})">🗑️</button>
             </td>
           </tr>`;
@@ -2533,6 +2586,32 @@
       else currentMasters[activeTab].push({ name: "新規", compName: "", zip: "", addr: "", tel: "" });
       renderTab();
     }
+    function doCopyText(text) {
+      if (!text) return;
+      const fallbackCopy = () => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('📋 コピーしました'); }
+        catch (e) { alert('コピーに失敗しました。以下の内容を手動でコピーしてください：\n\n' + text); }
+        document.body.removeChild(ta);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast('📋 コピーしました')).catch(fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
+    }
+
+    function copyMasterField(idx, field) {
+      const item = currentMasters[activeTab][idx];
+      if (!item) return;
+      doCopyText(item[field] || '');
+    }
+
     function copyMasterItem(idx) {
       const item = currentMasters[activeTab][idx];
       if (!item) return;
@@ -2542,28 +2621,7 @@
       if (item.zip) lines.push(`〒${item.zip}`);
       if (item.addr) lines.push(item.addr);
       if (item.tel) lines.push(`TEL: ${item.tel}`);
-      const text = lines.join('\n');
-      if (!text) return;
-
-      const fallbackCopy = () => {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.left = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        try { document.execCommand('copy'); showToast('📋 コピーしました（他のタブに貼り付けできます）'); }
-        catch (e) { alert('コピーに失敗しました。以下の内容を手動でコピーしてください：\n\n' + text); }
-        document.body.removeChild(ta);
-      };
-
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-          showToast('📋 コピーしました（他のタブに貼り付けできます）');
-        }).catch(fallbackCopy);
-      } else {
-        fallbackCopy();
-      }
+      doCopyText(lines.join('\n'));
     }
 
     function deleteMasterRow(idx) {
