@@ -896,13 +896,6 @@
       ],
       "transporters": [
             {
-                  "name": "筒賀建設(株)［自社運搬］",
-                  "compName": "筒賀建設株式会社",
-                  "zip": "731-3702",
-                  "addr": "広島県山県郡安芸太田町大字中筒賀540-2",
-                  "tel": "0826-28-1877"
-            },
-            {
                   "name": "あさやま工業(株)",
                   "compName": "あさやま工業株式会社",
                   "zip": "731-3502",
@@ -964,6 +957,13 @@
                   "zip": "731-3621",
                   "addr": "広島県山県郡安芸太田町下筒賀1152-1",
                   "tel": "0826-22-0335"
+            },
+            {
+                  "name": "筒賀建設(株)［自社運搬］",
+                  "compName": "筒賀建設株式会社",
+                  "zip": "731-3702",
+                  "addr": "広島県山県郡安芸太田町大字中筒賀540-2",
+                  "tel": "0826-28-1877"
             },
             {
                   "name": "(株)Ｒeady Lyn",
@@ -1187,9 +1187,72 @@
       ]
 };
 
+    // マスターデータの「初期値バージョン」。Claudeがマスターの初期値を更新するたびにこの数字を1つ上げる。
+    // ブラウザ側は、保存されているバージョンより新しければ「新しく追加された初期値だけ」を自動で取り込む
+    const MASTER_DATA_VERSION = 3;
+
     let activeTab = 'emitters';
     let showDisplayNameCol = false;
     let currentMasters = JSON.parse(localStorage.getItem('manifest_masters')) || defaultMasters;
+
+    function mergeNewDefaultsIntoMasters() {
+      const MASTER_CATEGORIES = {
+        emitters: it => it.compName,
+        sites: it => it.siteName,
+        depts: it => it.name,
+        persons: it => it.name,
+        surnames: it => it.name,
+        transporters: it => it.compName,
+        vehicles: it => it.no,
+        vehicles2: it => it.no,
+        disposals: it => it.compName,
+        dispComps: it => it.compName,
+        tsSites: it => it.compName
+      };
+
+      let knownDefaultKeys = {};
+      try { knownDefaultKeys = JSON.parse(localStorage.getItem('manifest_masters_known_default_keys') || '{}'); } catch (e) { knownDefaultKeys = {}; }
+
+      const newKnownDefaultKeys = {};
+
+      Object.keys(MASTER_CATEGORIES).forEach(key => {
+        const matchKeyFn = MASTER_CATEGORIES[key];
+        if (!Array.isArray(currentMasters[key])) currentMasters[key] = [];
+        if (!Array.isArray(defaultMasters[key])) return;
+
+        const oldDefaultKeySet = new Set(knownDefaultKeys[key] || []);
+        const newDefaultKeySet = new Set(defaultMasters[key].map(matchKeyFn).filter(Boolean));
+        newKnownDefaultKeys[key] = Array.from(newDefaultKeySet);
+
+        // 前回の初期値には存在していたが、今回の初期値からは無くなっている項目は、
+        // 手元でも一緒に取り除く（ユーザーが独自に追加したものは対象外）
+        currentMasters[key] = currentMasters[key].filter(item => {
+          const k = matchKeyFn(item);
+          const wasOfficialDefault = k && oldDefaultKeySet.has(k);
+          const stillOfficialDefault = k && newDefaultKeySet.has(k);
+          return !(wasOfficialDefault && !stillOfficialDefault);
+        });
+
+        // 新しく追加された初期値を取り込む
+        const existingKeys = new Set(currentMasters[key].map(matchKeyFn).filter(Boolean));
+        defaultMasters[key].forEach(defItem => {
+          const k = matchKeyFn(defItem);
+          if (k && !existingKeys.has(k)) {
+            currentMasters[key].push(Object.assign({}, defItem));
+            existingKeys.add(k);
+          }
+        });
+      });
+
+      localStorage.setItem('manifest_masters_known_default_keys', JSON.stringify(newKnownDefaultKeys));
+
+      ['emitters', 'sites', 'transporters', 'disposals', 'dispComps', 'tsSites', 'depts', 'persons', 'surnames'].forEach(key => {
+        if (Array.isArray(currentMasters[key])) {
+          currentMasters[key].sort((a, b) => japaneseNameCompare(a.name, b.name));
+        }
+      });
+    }
+
 
     // 安全初期化
     if (!currentMasters || typeof currentMasters !== 'object') currentMasters = defaultMasters;
@@ -1284,6 +1347,16 @@
       if (aIsAlpha && bIsAlpha) return cleanA.toUpperCase().localeCompare(cleanB.toUpperCase(), 'en');
       return getSortReadingKey(cleanA).localeCompare(getSortReadingKey(cleanB), 'ja');
     }
+
+    // マスターの初期値が更新されていれば、新しく追加された分だけを自動で取り込む（手元の追加・修正内容は消さない）
+    (function autoMergeMasterUpdates() {
+      const storedVersion = parseInt(localStorage.getItem('manifest_masters_version') || '0', 10);
+      if (storedVersion < MASTER_DATA_VERSION) {
+        mergeNewDefaultsIntoMasters();
+        localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
+        localStorage.setItem('manifest_masters_version', String(MASTER_DATA_VERSION));
+      }
+    })();
 
     // 移行処理：担当者・運転手の並び順を正しい50音順に修正する（既存の保存データにも適用）
     (function fixPersonSortOrder() {
