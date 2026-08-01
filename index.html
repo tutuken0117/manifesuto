@@ -145,12 +145,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #2563eb;
-    color: #ffffff;
+    background: #bef264;
+    color: #365314;
     font-size: 10px;
     font-weight: bold;
     border-radius: 3px;
-    border: 1px solid #1d4ed8;
+    border: 1px solid #84cc16;
     box-shadow: 0 1px 3px rgba(0,0,0,0.5);
     pointer-events: none;
   }
@@ -166,6 +166,28 @@
     padding: 0;
     margin: 0;
   }
+  body.mode-edit .field-picker .slash-marker-btn { outline: 2px dashed #f59e0b; }
+  .slash-marker-btn {
+    display: flex;
+    width: 16px;
+    height: 16px;
+    align-items: center;
+    justify-content: center;
+    background: #fecaca;
+    color: #7f1d1d;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 3px;
+    border: 1px solid #ef4444;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    cursor: pointer;
+  }
+  .slash-marker-btn.active {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #b91c1c;
+  }
+  .slash-marker-btn:hover { filter: brightness(0.95); }
   .field-clear-btn {
     cursor: pointer;
     font-size: 11px;
@@ -374,6 +396,12 @@
     background: rgba(0,0,0,0.5); display: none;
     justify-content: center; align-items: center; z-index: 9999;
   }
+  #master-modal {
+    align-items: flex-start;
+  }
+  #master-modal .modal-content {
+    margin-top: 24px;
+  }
   .modal-content {
     background: white; width: 95vw; max-width: 1200px; max-height: 88vh;
     border-radius: 8px; padding: 20px; overflow-y: auto;
@@ -394,18 +422,32 @@
     border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; margin-bottom: 15px;
   }
   .tab-buttons {
-    display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 15px;
+    display: flex; flex-wrap: wrap; gap: 14px; padding-bottom: 15px; align-items: center;
   }
+  .tab-group {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+    padding: 6px 10px 6px 6px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+  }
+  .tab-group:nth-of-type(1) { background: #bfdbfe; border-color: #60a5fa; }
+  .tab-group:nth-of-type(2) { background: #bbf7d0; border-color: #4ade80; }
+  .tab-group:nth-of-type(3) { background: #fed7aa; border-color: #fb923c; }
+  .tab-group-label {
+    font-size: 10px; font-weight: bold; color: #1f2937;
+    padding: 0 4px; white-space: nowrap;
+  }
+  #tab-container.hide-displayname-col .col-displayname { display: none; }
   .tab-btn {
     padding: 6px 14px; background: #e5e7eb; border: none;
     border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px;
   }
   .tab-btn.active { background: #4f46e5; color: white; }
 
-  .table-wrapper { width: 100%; overflow-x: auto; border: 1px solid #d1d5db; border-radius: 4px; margin-bottom: 15px; }
+  .table-wrapper { width: 100%; overflow-x: auto; overflow-y: auto; max-height: 55vh; border: 1px solid #d1d5db; border-radius: 4px; margin-bottom: 15px; }
   .master-table { width: 100%; border-collapse: collapse; table-layout: auto; }
   .master-table th, .master-table td { border: 1px solid #d1d5db; padding: 6px; font-size: 12px; text-align: left; }
-  .master-table th { background: #f3f4f6; font-weight: bold; white-space: nowrap; }
+  .master-table th { background: #f3f4f6; font-weight: bold; white-space: nowrap; position: sticky; top: 0; z-index: 5; }
   .master-table input { box-sizing: border-box; padding: 4px 6px; border: 1px solid #ccc; border-radius: 3px; font-size: 12px; }
   .master-table input.col-narrow { width: 100px; }
   .master-table input.col-medium { width: 150px; }
@@ -475,7 +517,7 @@
     <button class="btn btn-indigo mode-input-only" id="btn-save-state" onclick="openStateModal()">💾 名前保存</button>
     <button class="btn btn-red mode-input-only" id="btn-clear-emitter" onclick="clearAllExceptEmitter()" title="排出事業者以外を全消去">🧹 排出者以外クリア</button>
 
-    <button class="btn btn-dark mode-edit-only" id="btn-reset-position" onclick="resetToDefaultPositions()">📍 初期位置に戻す</button>
+    <button class="btn btn-dark mode-edit-only" id="btn-reset-position" onclick="resetToDefaultPositions()" title="レイアウトが崩れた時の保険。ファイルに保存された初期値に戻します">📍 初期値に戻す</button>
     <button class="btn btn-indigo mode-edit-only" id="btn-calib" onclick="openCalibModal()">🖨️ 印字位置補正</button>
     <button class="btn btn-dark mode-edit-only" id="btn-export-positions" onclick="exportPickerPositions()">📋 配置情報をコピー</button>
 
@@ -514,56 +556,56 @@
   <div class="page-wrapper" id="page-wrapper">
     <div class="page" id="manifest-page"></div>
 
-    <div class="field-picker" data-picker-id="picker-date" style="left:57.68mm; top:6.29mm;">
+    <div class="field-picker" data-picker-id="picker-date" style="left:56.89mm; top:6.55mm;">
       <div class="picker-overlay"><span class="picker-btn">▼</span><input type="date" id="picker-date" onchange="applyDate(this.value)"></div>
       <span class="field-clear-btn" onclick="clearDateInfo()" title="日付クリア">🧹</span>
     </div>
 
     <div class="field-picker" data-picker-id="sel-emitter" style="left:103.39mm; top:19.32mm;">
-      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-emitter" onchange="applyEmitter()"><option value="">-- 排出者 --</option></select></div>
+      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-emitter" onchange="applyEmitter()"><option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option></select></div>
     </div>
-    <div class="field-picker" data-picker-id="sel-dept" style="left:139.02mm; top:12.08mm;">
-      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-dept" onchange="applyDept()"><option value="">-- 所属部署 --</option></select></div>
+    <div class="field-picker" data-picker-id="sel-dept" style="left:138.76mm; top:11.02mm;">
+      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-dept" onchange="applyDept()"><option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option></select></div>
     </div>
-    <div class="field-picker" data-picker-id="sel-issue-person" style="left:190.42mm; top:11.29mm;">
-      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-issue-person" onchange="applyIssuePerson()"><option value="">-- 担当者 --</option></select></div>
+    <div class="field-picker" data-picker-id="sel-issue-person" style="left:192.8mm; top:10.76mm;">
+      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-issue-person" onchange="applyIssuePerson()"><option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option></select></div>
     </div>
     <div class="field-picker" data-picker-id="sel-site" style="left:178.33mm; top:19.59mm;">
-      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-site" onchange="applySite()"><option value="">-- 事業場 --</option></select></div>
+      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-site" onchange="applySite()"><option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option></select></div>
     </div>
 
-    <div class="field-picker" data-picker-id="sel-inter-slash" style="left:107.71mm; top:81.55mm;">
-      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-inter-slash" onchange="applyInterSlash()"><option value="">-- 中間処理 --</option><option value="SLASH">【斜線を引く】</option></select></div>
+    <div class="field-picker" data-picker-id="slash-mark-inter" style="left:107.67mm; top:83.14mm;">
+      <span class="slash-marker-btn" data-slash-target="inter" onclick="toggleSlashMark('inter')" title="中間処理に斜線を引く/消す">〼</span>
     </div>
 
-    <div class="field-picker" data-picker-id="sel-trans1" style="left:101.8mm; top:102.97mm;">
-      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-trans1" onchange="applyTrans(1)"><option value="">-- 運搬(1) --</option></select></div>
+    <div class="field-picker" data-picker-id="sel-trans1" style="left:101.8mm; top:102.71mm;">
+      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-trans1" onchange="applyTrans(1)"><option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option></select></div>
     </div>
-    <div class="field-picker" data-picker-id="sel-veh1" style="left:77.04mm; top:125.82mm;">
-      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-veh1" onchange="applyVehicle(1)"><option value="">-- 車両(1) --</option></select></div>
+    <div class="field-picker" data-picker-id="sel-veh1" style="left:78.63mm; top:125.82mm;">
+      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-veh1" onchange="applyVehicle(1)"><option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option></select></div>
     </div>
     <div class="field-picker" data-picker-id="sel-driver" style="left:53.47mm; top:171.88mm;">
-      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-driver" onchange="applyDriverName(this.value)"><option value="">-- 運転手 --</option></select></div>
+      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-driver" onchange="applyDriverName(this.value)"><option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option></select></div>
     </div>
 
-    <div class="field-picker" data-picker-id="sel-trans2" style="left:183.61mm; top:102.97mm;">
-      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-trans2" onchange="applyTrans(2)"><option value="">-- 運搬(2) --</option><option value="SLASH">【斜線を引く】</option></select></div>
+    <div class="field-picker" data-picker-id="sel-trans2" style="left:178.59mm; top:102.72mm;">
+      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-trans2" onchange="applyTrans(2)"><option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option></select></div>
+      <span class="slash-marker-btn" data-slash-target="trans2" onclick="toggleSlashMark('trans2')" title="運搬(2)に斜線を引く/消す">〼</span>
     </div>
-    <div class="field-picker" data-picker-id="sel-veh2" style="left:158.06mm; top:126.09mm;">
-      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-veh2" onchange="applyVehicle(2)"><option value="">-- 車両(2) --</option></select></div>
-    </div>
-
-    <div class="field-picker" data-picker-id="sel-ts-site" style="left:183.35mm; top:136.53mm;">
-      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-ts-site" onchange="applyTsSite()"><option value="">-- 積替え保管 --</option><option value="SLASH">【斜線を引く】</option></select></div>
+    <div class="field-picker" data-picker-id="sel-veh2" style="left:159.91mm; top:126.09mm;">
+      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-veh2" onchange="applyVehicle(2)"><option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option></select></div>
     </div>
 
-    <div class="field-picker" data-picker-id="sel-disp-site" style="left:257.06mm; top:102.97mm;">
-      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-disp-site" onchange="applyDispSite()"><option value="">-- 運搬先事業場 --</option></select></div>
-      <span class="field-clear-btn" onclick="clearDispSiteInfo()" title="運搬先事業場クリア">🧹</span>
+    <div class="field-picker" data-picker-id="sel-ts-site" style="left:178.59mm; top:136.53mm;">
+      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-ts-site" onchange="applyTsSite()"><option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option></select></div>
+      <span class="slash-marker-btn" data-slash-target="tssite" onclick="toggleSlashMark('tssite')" title="積替え保管に斜線を引く/消す">〼</span>
     </div>
-    <div class="field-picker" data-picker-id="sel-disp-comp" style="left:97.04mm; top:136.26mm;">
-      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-disp-comp" onchange="applyDispComp()"><option value="">-- 処分受託者 --</option></select></div>
-      <span class="field-clear-btn" onclick="clearDispCompInfo()" title="処分受託者クリア">🧹</span>
+
+    <div class="field-picker" data-picker-id="sel-disp-site" style="left:262.08mm; top:103.23mm;">
+      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-disp-site" onchange="applyDispSite()"><option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option></select></div>
+    </div>
+    <div class="field-picker" data-picker-id="sel-disp-comp" style="left:102.07mm; top:136.52mm;">
+      <div class="picker-overlay"><span class="picker-btn">▼</span><select id="sel-disp-comp" onchange="applyDispComp()"><option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option></select></div>
     </div>
   </div>
 
@@ -573,32 +615,45 @@
       <div class="modal-sticky-top">
         <div class="modal-header">
           <h3 style="margin:0;">📋 マスターデータ管理（50音自動整列）</h3>
+          <button class="btn" onclick="exportMasterData()" title="マスターデータ全体をコピーしてClaudeに送るためのボタン" style="background:#7c3aed; color:#ffffff; border:2px solid #6d28d9; font-size:12px; padding:6px 14px; border-radius:6px; margin-left:auto; margin-right:10px;">📋 マスター全体をコピー</button>
           <button onclick="closeMasterModal()" style="font-size:16px; border:none; background:none; cursor:pointer;">✖</button>
         </div>
 
         <div class="tab-buttons">
-          <button class="tab-btn active" onclick="switchTab('emitters')">排出者</button>
-          <button class="tab-btn" onclick="switchTab('sites')">事業場</button>
-          <button class="tab-btn" onclick="switchTab('depts')">部署</button>
-          <button class="tab-btn" onclick="switchTab('persons')">担当者</button>
-          <button class="tab-btn" onclick="switchTab('surnames')">運転手</button>
-          <button class="tab-btn" onclick="switchTab('transporters')">運搬業者</button>
-          <button class="tab-btn" onclick="switchTab('vehicles')">運搬(1)車両</button>
-          <button class="tab-btn" onclick="switchTab('vehicles2')">運搬(2)車両</button>
-          <button class="tab-btn" onclick="switchTab('disposals')">運搬先</button>
-          <button class="tab-btn" onclick="switchTab('dispComps')">処分受託者</button>
-          <button class="tab-btn" onclick="switchTab('tsSites')">積替え保管</button>
+          <div class="tab-group">
+            <span class="tab-group-label">排出事業者欄</span>
+            <button class="tab-btn active" onclick="switchTab('emitters')">排出者</button>
+            <button class="tab-btn" onclick="switchTab('sites')">事業場</button>
+            <button class="tab-btn" onclick="switchTab('depts')">部署</button>
+            <button class="tab-btn" onclick="switchTab('persons')">担当者</button>
+          </div>
+          <div class="tab-group">
+            <span class="tab-group-label">運搬欄</span>
+            <button class="tab-btn" onclick="switchTab('transporters')">運搬業者</button>
+            <button class="tab-btn" onclick="switchTab('surnames')">運転手</button>
+            <button class="tab-btn" onclick="switchTab('vehicles')">運搬(1)車両</button>
+            <button class="tab-btn" onclick="switchTab('vehicles2')">運搬(2)車両</button>
+          </div>
+          <div class="tab-group">
+            <span class="tab-group-label">処分欄</span>
+            <button class="tab-btn" onclick="switchTab('disposals')">運搬先</button>
+            <button class="tab-btn" onclick="switchTab('dispComps')">処分受託者</button>
+            <button class="tab-btn" onclick="switchTab('tsSites')">積替え保管</button>
+          </div>
         </div>
       </div>
 
       <div class="modal-content-inner" style="padding-top:0;">
+        <div style="display:flex; justify-content:flex-start; margin-bottom:6px;">
+          <button class="btn" id="btn-toggle-displayname" onclick="toggleDisplayNameCol()" title="プルダウンリストに出る略称だけを、ここで編集できます" style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; font-size:11px; padding:5px 10px; border-radius:5px;">🔽 プルダウンの略称を編集</button>
+        </div>
         <div class="table-wrapper">
           <div id="tab-container"></div>
         </div>
 
         <div style="display:flex; justify-content:space-between; margin-top:10px;">
           <button class="btn btn-green" onclick="addMasterRow()">➕ 新規追加</button>
-          <button class="btn btn-blue" onclick="saveMasterData()">💾 設定を保存</button>
+          <button class="btn" onclick="saveMasterData()" style="background:#16a34a; color:#ffffff; border:2px solid #15803d; font-size:15px; padding:10px 24px; border-radius:8px; box-shadow:0 3px 8px rgba(22,163,74,0.4);">💾 設定を保存</button>
         </div>
       </div>
     </div>
@@ -659,6 +714,18 @@
         <button class="btn btn-blue" onclick="saveCalibration()">💾 保存</button>
         <button class="btn btn-dark" onclick="resetCalibration()">補正なし(等倍)に戻す</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 運搬先の事業場 候補選択モーダル -->
+  <div class="modal-overlay" id="candidate-modal">
+    <div class="modal-content" style="max-width:420px;">
+      <div class="modal-header">
+        <h3 style="margin:0;">🔎 運搬先の事業場を選択</h3>
+        <button onclick="closeCandidateModal()" title="閉じる" style="font-size:16px; border:none; background:none; cursor:pointer;">✖</button>
+      </div>
+      <p style="color:#6b7280; font-size:12px; margin-top:0;">この会社には複数の施設があります。該当するものを選んでください。</p>
+      <div id="candidate-list"></div>
     </div>
   </div>
 
@@ -761,91 +828,367 @@
     }
 
     // 左1mm・上8mmへシフト済みの基本配置データ (全103要素)
-    const masterDefaultLayout = [{"type": "input", "x": 29.37, "y": 11.13, "w": 12.8, "h": 5.4, "id": "f-issue-year", "val": "2026", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 44.31, "y": 11.4, "w": 5.56, "h": 5.16, "id": "f-issue-month", "val": "7", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 51.88, "y": 11.4, "w": 5.3, "h": 5.42, "id": "f-issue-day", "val": "29", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 123.15, "y": 12.66, "w": 28.8, "h": 5.4, "id": "f-issue-dept", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 165.56, "y": 11.66, "w": 19.84, "h": 5.42, "id": "f-issue-person", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 44.92, "y": 24.5, "w": 22.75, "h": 4.1, "id": "f-emitter-zip", "val": "731-3702", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 39.92, "y": 28.44, "w": 67.71, "h": 4.1, "id": "f-emitter-addr", "val": "広島県山県郡安芸太田町大字中筒賀540-2", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 49.97, "y": 33.15, "w": 56.07, "h": 4.63, "id": "f-emitter-name", "val": "筒賀建設株式会社", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 49.97, "y": 38.38, "w": 56.6, "h": 4.1, "id": "f-emitter-tel", "val": "0826-28-1877", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 124.35, "y": 24.76, "w": 22.49, "h": 4.63, "id": "f-site-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 114.33, "y": 29.5, "w": 66.92, "h": 3.84, "id": "f-site-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 115.92, "y": 33.68, "w": 66.39, "h": 4.37, "id": "f-site-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 121.2, "y": 38.38, "w": 45.23, "h": 4.37, "id": "f-site-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "circle", "x": 76.37, "y": 46.32, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "t", "groupName": "unit", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 81.07, "y": 46.32, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "Kg", "groupName": "unit", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 86.41, "y": 46.32, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "㎥", "groupName": "unit", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 92.04, "y": 46.32, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "ℓ", "groupName": "unit", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 28.34, "y": 54.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "01", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 59.41, "y": 54.56, "w": 10.8, "h": 4.4, "id": "f-qty-01", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 59.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "02", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 59.41, "y": 58.8, "w": 10.8, "h": 4.4, "id": "f-qty-02", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 63.3, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "03", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 59.41, "y": 63.03, "w": 10.8, "h": 4.4, "id": "f-qty-03", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 67.53, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "04", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 59.41, "y": 67.27, "w": 10.8, "h": 4.4, "id": "f-qty-04", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 71.77, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "05", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 59.41, "y": 71.5, "w": 10.8, "h": 4.4, "id": "f-qty-05", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 76.0, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "06", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 59.41, "y": 75.74, "w": 10.8, "h": 4.4, "id": "f-qty-06", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 71.47, "y": 54.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "07", "groupName": "waste_type", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "input", "x": 100.13, "y": 54.56, "w": 10.8, "h": 4.4, "id": "f-qty-07", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 71.47, "y": 59.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "08", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 100.13, "y": 59.06, "w": 10.8, "h": 4.4, "id": "f-qty-08", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 54.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "11", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.88, "y": 54.82, "w": 10.8, "h": 4.4, "id": "f-qty-11", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 59.33, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "12", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.88, "y": 59.06, "w": 10.8, "h": 4.4, "id": "f-qty-12", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 63.56, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "13", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.62, "y": 63.04, "w": 10.8, "h": 4.4, "id": "f-qty-13", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 67.8, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "14", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.88, "y": 67.27, "w": 10.8, "h": 4.4, "id": "f-qty-14", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 72.03, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "15", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.62, "y": 71.77, "w": 10.8, "h": 4.4, "id": "f-qty-15", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 76.0, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "16", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.62, "y": 76.0, "w": 10.8, "h": 4.4, "id": "f-qty-16", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 153.0, "y": 54.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "17", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 181.4, "y": 54.56, "w": 10.8, "h": 4.4, "id": "f-qty-17", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 153.0, "y": 59.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "18", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 181.4, "y": 59.06, "w": 10.8, "h": 4.4, "id": "f-qty-18", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 193.72, "y": 55.09, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "21", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 219.31, "y": 54.82, "w": 10.8, "h": 4.4, "id": "f-qty-21", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 181.28, "y": 71.97, "w": 11.64, "h": 8.6, "id": "f-total-qty", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "circle", "x": 234.37, "y": 50.86, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "shape", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 234.37, "y": 55.09, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "shape", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 234.37, "y": 59.32, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "shape", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 50.59, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 55.09, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 59.32, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 63.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "4", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 86.76, "y": 92.87, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "final_select", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 137.47, "y": 93.14, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "final_select", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 208.83, "y": 122.68, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "inter_method", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 218.34, "y": 122.69, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "inter_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 227.84, "y": 122.95, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "inter_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 209.1, "y": 127.16, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "final_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 221.51, "y": 127.16, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "final_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 234.45, "y": 127.42, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "final_method", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "input", "x": 39.36, "y": 105.63, "w": 23.81, "h": 4.1, "id": "f-trans1-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 30.13, "y": 109.83, "w": 76.44, "h": 3.57, "id": "f-trans1-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 44.94, "y": 114.35, "w": 32.8, "h": 4.1, "id": "f-trans1-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 45.21, "y": 118.73, "w": 21.43, "h": 3.57, "id": "f-trans1-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 52.44, "y": 126.65, "w": 26.8, "h": 4.4, "id": "f-trans1-veh-no", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 82.88, "y": 126.65, "w": 21.8, "h": 4.4, "id": "f-trans1-veh-type", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "circle", "x": 28.25, "y": 126.69, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "ts1", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 37.9, "y": 126.69, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "ts1", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 121.67, "y": 105.63, "w": 21.96, "h": 3.84, "id": "f-trans2-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 111.94, "y": 109.84, "w": 75.91, "h": 4.37, "id": "f-trans2-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 127.01, "y": 114.34, "w": 35.45, "h": 4.37, "id": "f-trans2-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 127.52, "y": 118.99, "w": 23.54, "h": 3.57, "id": "f-trans2-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 133.19, "y": 126.92, "w": 26.8, "h": 4.4, "id": "f-trans2-veh-no", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 164.94, "y": 126.92, "w": 21.8, "h": 4.4, "id": "f-trans2-veh-type", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "circle", "x": 109.52, "y": 126.95, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "ts2", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 119.43, "y": 126.95, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "ts2", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 205.19, "y": 105.9, "w": 15.61, "h": 4.1, "id": "f-disp-site-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 194.64, "y": 110.36, "w": 71.94, "h": 4.37, "id": "f-disp-site-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 197.03, "y": 114.87, "w": 69.3, "h": 4.1, "id": "f-disp-site-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 203.89, "y": 119.1, "w": 20.9, "h": 3.57, "id": "f-disp-site-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 39.63, "y": 139.25, "w": 19.05, "h": 4.37, "id": "f-disp-comp-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 31.19, "y": 143.72, "w": 73.26, "h": 3.84, "id": "f-disp-comp-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 46.53, "y": 146.86, "w": 59.24, "h": 3.97, "id": "f-disp-comp-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 46.79, "y": 150.9, "w": 23.54, "h": 4.37, "id": "f-disp-comp-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 123.8, "y": 139.26, "w": 23.02, "h": 4.1, "id": "f-ts-site-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 112.47, "y": 143.47, "w": 75.11, "h": 4.23, "id": "f-ts-site-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 124.09, "y": 147.67, "w": 23.01, "h": 3.44, "id": "f-ts-site-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "circle", "x": 127.46, "y": 152.38, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "yu", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 137.36, "y": 152.38, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "yu", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 27.55, "y": 168.29, "w": 30.41, "h": 3.7, "id": "f-sign-trans1-comp", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 27.56, "y": 172.08, "w": 30.68, "h": 5.02, "id": "f-sign-trans1-person", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "slash", "x": 109.01, "y": 99.41, "w": 78.81, "h": 30.68, "id": "slash-trans2", "val": "", "hasSlash": true, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "slash", "x": 107.71, "y": 82.19, "w": 158.42, "h": 5.55, "id": "slash-inter", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "slash", "x": 109.27, "y": 133.76, "w": 78.28, "h": 21.16, "id": "slash-ts-site", "val": "", "hasSlash": true, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": null}];
+    const masterDefaultLayout = [{"type": "input", "x": 29.11, "y": 10.34, "w": 12.8, "h": 5.4, "id": "f-issue-year", "val": "2026", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 43.78, "y": 10.61, "w": 5.56, "h": 5.16, "id": "f-issue-month", "val": "7", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 51.35, "y": 10.61, "w": 5.3, "h": 5.42, "id": "f-issue-day", "val": "29", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 123.15, "y": 11.07, "w": 15.87, "h": 5.29, "id": "f-issue-dept", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 160.54, "y": 11.13, "w": 32.27, "h": 5.29, "id": "f-issue-person", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 44.92, "y": 24.5, "w": 22.75, "h": 4.1, "id": "f-emitter-zip", "val": "731-3702", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 41.24, "y": 28.44, "w": 66.12, "h": 3.97, "id": "f-emitter-addr", "val": "広島県山県郡安芸太田町大字中筒賀540-2", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 49.97, "y": 32.62, "w": 57.39, "h": 4.5, "id": "f-emitter-name", "val": "筒賀建設株式会社", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 49.97, "y": 37.32, "w": 29.36, "h": 3.97, "id": "f-emitter-tel", "val": "0826-28-1877", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 124.35, "y": 24.76, "w": 22.48, "h": 3.97, "id": "f-site-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 119.88, "y": 28.71, "w": 62.68, "h": 3.97, "id": "f-site-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 119.89, "y": 32.62, "w": 62.42, "h": 4.23, "id": "f-site-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 122.26, "y": 37.06, "w": 28.56, "h": 4.5, "id": "f-site-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "circle", "x": 76.37, "y": 46.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "t", "groupName": "unit", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 81.07, "y": 46.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "Kg", "groupName": "unit", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 86.67, "y": 46.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "㎥", "groupName": "unit", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 92.04, "y": 46.32, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "ℓ", "groupName": "unit", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 28.34, "y": 54.57, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "01", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 53.77, "w": 10.8, "h": 4.4, "id": "f-qty-01", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 58.8, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "02", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 58.01, "w": 10.8, "h": 4.4, "id": "f-qty-02", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 63.04, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "03", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 62.24, "w": 10.8, "h": 4.4, "id": "f-qty-03", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 67.27, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "04", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 66.48, "w": 10.8, "h": 4.4, "id": "f-qty-04", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 71.51, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "05", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 70.71, "w": 10.8, "h": 4.4, "id": "f-qty-05", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 75.74, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "06", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 74.95, "w": 10.8, "h": 4.4, "id": "f-qty-06", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 71.47, "y": 54.57, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "07", "groupName": "waste_type", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "input", "x": 99.87, "y": 54.3, "w": 10.8, "h": 4.4, "id": "f-qty-07", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 71.47, "y": 58.8, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "08", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 99.87, "y": 58.27, "w": 10.8, "h": 4.4, "id": "f-qty-08", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 54.57, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "11", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.35, "y": 54.29, "w": 10.8, "h": 4.4, "id": "f-qty-11", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 58.8, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "12", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.35, "y": 58.53, "w": 10.8, "h": 4.4, "id": "f-qty-12", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 63.03, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "13", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.36, "y": 62.78, "w": 10.8, "h": 4.4, "id": "f-qty-13", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 67.27, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "14", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.35, "y": 67.01, "w": 10.8, "h": 4.4, "id": "f-qty-14", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 71.5, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "15", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.36, "y": 71.24, "w": 10.8, "h": 4.4, "id": "f-qty-15", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 75.74, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "16", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.36, "y": 75.47, "w": 10.8, "h": 4.4, "id": "f-qty-16", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 153, "y": 54.57, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "17", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 181.4, "y": 54.56, "w": 10.84, "h": 4.23, "id": "f-qty-17", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 153, "y": 59.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "18", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 181.4, "y": 60.91, "w": 10.84, "h": 4.5, "id": "f-qty-18", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 193.72, "y": 54.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "21", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 219.58, "y": 54.56, "w": 11.37, "h": 4.23, "id": "f-qty-21", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 181.28, "y": 71.18, "w": 11.11, "h": 8.73, "id": "f-total-qty", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "circle", "x": 234.37, "y": 50.6, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "shape", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 234.37, "y": 54.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "shape", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 234.37, "y": 59.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "shape", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 50.59, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 54.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 59.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 63.3, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "4", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 86.76, "y": 92.34, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "final_select", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 137.47, "y": 92.61, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "final_select", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 208.83, "y": 122.15, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "inter_method", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 218.34, "y": 122.16, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "inter_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 227.84, "y": 122.42, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "inter_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 209.1, "y": 126.37, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "final_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 221.77, "y": 126.37, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "final_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 234.45, "y": 126.63, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "final_method", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "input", "x": 39.36, "y": 105.63, "w": 23.81, "h": 4.1, "id": "f-trans1-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 36.48, "y": 109.83, "w": 70.08, "h": 3.44, "id": "f-trans1-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 45.47, "y": 113.56, "w": 60.83, "h": 4.5, "id": "f-trans1-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 45.47, "y": 117.94, "w": 25.12, "h": 3.44, "id": "f-trans1-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 47.68, "y": 125.86, "w": 33.06, "h": 4.23, "id": "f-trans1-veh-no", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 80.76, "y": 125.86, "w": 25.65, "h": 4.5, "id": "f-trans1-veh-type", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "circle", "x": 28.25, "y": 126.16, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "ts1", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 37.9, "y": 126.16, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "ts1", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 121.67, "y": 105.63, "w": 21.96, "h": 3.84, "id": "f-trans2-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 117.49, "y": 109.31, "w": 70.35, "h": 4.5, "id": "f-trans2-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 127.01, "y": 113.81, "w": 60.83, "h": 4.5, "id": "f-trans2-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 127.52, "y": 118.2, "w": 23.54, "h": 3.57, "id": "f-trans2-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 129.22, "y": 126.13, "w": 33.06, "h": 4.5, "id": "f-trans2-veh-no", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 162.29, "y": 126.13, "w": 25.39, "h": 4.5, "id": "f-trans2-veh-type", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "circle", "x": 109.78, "y": 126.42, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "ts2", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 119.43, "y": 126.42, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "ts2", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 205.19, "y": 105.9, "w": 19.57, "h": 3.97, "id": "f-disp-site-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 201.52, "y": 109.83, "w": 65.06, "h": 3.7, "id": "f-disp-site-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 201.79, "y": 113.55, "w": 65.06, "h": 4.76, "id": "f-disp-site-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 203.89, "y": 118.31, "w": 27.5, "h": 3.44, "id": "f-disp-site-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 39.63, "y": 138.19, "w": 19.05, "h": 4.37, "id": "f-disp-comp-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 36.21, "y": 142.66, "w": 70.35, "h": 3.97, "id": "f-disp-comp-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 46.53, "y": 146.6, "w": 59.77, "h": 4.5, "id": "f-disp-comp-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 46.79, "y": 151.43, "w": 23.54, "h": 3.97, "id": "f-disp-comp-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 123.8, "y": 139.26, "w": 23.02, "h": 4.1, "id": "f-ts-site-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 119.88, "y": 143.47, "w": 67.7, "h": 4.23, "id": "f-ts-site-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 124.09, "y": 147.67, "w": 23.01, "h": 3.44, "id": "f-ts-site-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "circle", "x": 127.46, "y": 151.59, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "yu", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 137.36, "y": 151.59, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "yu", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 27.55, "y": 168.29, "w": 30.41, "h": 3.7, "id": "f-sign-trans1-comp", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 27.56, "y": 172.08, "w": 30.68, "h": 5.02, "id": "f-sign-trans1-person", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "slash", "x": 109.01, "y": 98.88, "w": 78.81, "h": 31.21, "id": "slash-trans2", "val": "", "hasSlash": true, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "slash", "x": 107.71, "y": 82.19, "w": 158.42, "h": 5.55, "id": "slash-inter", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "slash", "x": 109.27, "y": 132.7, "w": 78.28, "h": 22.74, "id": "slash-ts-site", "val": "", "hasSlash": true, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": null}];
 
     const defaultMasters = {
-      emitters: [
-        { name: "筒賀建設(株)", compName: "筒賀建設株式会社", zip: "731-3702", addr: "広島県山県郡安芸太田町大字中筒賀540-2", tel: "0826-28-1877" }
+      "emitters": [
+            {
+                  "name": "筒賀建設(株)",
+                  "compName": "筒賀建設株式会社",
+                  "zip": "731-3702",
+                  "addr": "広島県山県郡安芸太田町大字中筒賀540-2",
+                  "tel": "0826-28-1877"
+            }
       ],
-      sites: [
-        { name: "筒賀川河川維持工事", siteName: "一級河川太田川水系筒賀川河川維持修繕工事", zip: "731-3702", addr: "広島県山県郡安芸太田町中筒賀地内", tel: "" }
+      "sites": [
+            {
+                  "name": "打梨(発)本館便所改修",
+                  "siteName": "打梨(発)本館便所改修工事",
+                  "zip": "731-3844",
+                  "addr": "広島県山県郡安芸太田町大字打梨632-6",
+                  "tel": ""
+            }
       ],
-      depts: [
-        { name: "土木部" },
-        { name: "建築部" }
+      "depts": [
+            {
+                  "name": "建築部"
+            },
+            {
+                  "name": "土木部"
+            }
       ],
-      persons: [
-        { name: "大村 知裕" },
-        { name: "佐々木 晃史" },
-        { name: "佐々木 研次" }
+      "persons": [
+            {
+                  "name": "池田　一也"
+            },
+            {
+                  "name": "大村　知裕"
+            },
+            {
+                  "name": "佐々木　研次"
+            },
+            {
+                  "name": "佐々木　晃史"
+            },
+            {
+                  "name": "西村　浩幸"
+            },
+            {
+                  "name": "松栄　勝則"
+            }
       ],
-      surnames: [
-        { name: "梅田" },
-        { name: "大村" },
-        { name: "佐々木" },
-        { name: "滝口" },
-        { name: "西村" }
+      "surnames": [
+            {
+                  "name": "梅田"
+            },
+            {
+                  "name": "大村"
+            },
+            {
+                  "name": "佐々木"
+            },
+            {
+                  "name": "滝口"
+            },
+            {
+                  "name": "西村"
+            }
       ],
-      transporters: [
-        { name: "筒賀建設(株)［自社運搬］", compName: "筒賀建設株式会社", zip: "731-3702", addr: "広島県山県郡安芸太田町大字中筒賀540-2", tel: "0826-28-1877" },
-        {"name": "あさやま工業株式会社", "compName": "あさやま工業株式会社", "zip": "731-3502", "addr": "広島県山県郡安芸太田町大字津浪29番地", "tel": "0826-23-0126"},
-        {"name": "株式会社河本組", "compName": "株式会社河本組", "zip": "731-3612", "addr": "広島県山県郡安芸太田町大字遊谷665番地1", "tel": "0826-28-2317"},
-        {"name": "(株)サニックス資源開発グループ", "compName": "(株)サニックス資源開発グループ", "zip": "812-0013", "addr": "福岡県福岡市博多区博多駅東2丁目1番23号", "tel": "092-436-8870"},
-        {"name": "山陽工営株式会社", "compName": "山陽工営株式会社", "zip": "731-5151", "addr": "広島県広島市佐伯区五日市町大字保井田350番6", "tel": "082-927-2000"},
-        {"name": "ＣＥ広島合同会社", "compName": "ＣＥ広島合同会社", "zip": "731-0154", "addr": "広島県広島市安佐南区上安町336番地", "tel": "082-832-8260"},
-        {"name": "西部環境有限会社", "compName": "西部環境有限会社", "zip": "731-3812", "addr": "広島県山県郡安芸太田町大字寺領1512番地", "tel": "0826-28-1888"},
-        {"name": "ツネイシカムテックス株式会社", "compName": "ツネイシカムテックス株式会社", "zip": "720-0313", "addr": "広島県福山市沼隈町大字常石1083番地", "tel": "084-957-8521"},
-        {"name": "中村砕石株式会社", "compName": "中村砕石株式会社", "zip": "738-0601", "addr": "広島県広島市安佐北区大林町50", "tel": "082-818-4355"},
-        {"name": "広島舗材株式会社", "compName": "広島舗材株式会社", "zip": "731-3163", "addr": "広島県広島市安佐南区伴北4-2930", "tel": "082-848-1221"},
-        {"name": "丸伸企業株式会社", "compName": "丸伸企業株式会社", "zip": "731-0213", "addr": "広島県広島市安佐北区三入南1丁目13-14", "tel": "082-818-1000"}
+      "transporters": [
+            {
+                  "name": "筒賀建設(株)［自社運搬］",
+                  "compName": "筒賀建設株式会社",
+                  "zip": "731-3702",
+                  "addr": "広島県山県郡安芸太田町大字中筒賀540-2",
+                  "tel": "0826-28-1877"
+            },
+            {
+                  "name": "あさやま工業(株)",
+                  "compName": "あさやま工業株式会社",
+                  "zip": "731-3502",
+                  "addr": "広島県山県郡安芸太田町大字津浪29番地",
+                  "tel": "0826-23-0126"
+            },
+            {
+                  "name": "(株)クリンプロ",
+                  "compName": "株式会社クリンプロ",
+                  "zip": "731-3821",
+                  "addr": "広島県山県郡安芸太田町土居310",
+                  "tel": "0826-28-1880"
+            },
+            {
+                  "name": "(株)河本組",
+                  "compName": "株式会社河本組",
+                  "zip": "731-3612",
+                  "addr": "広島県山県郡安芸太田町大字遊谷665番地1",
+                  "tel": "0826-28-2317"
+            },
+            {
+                  "name": "丸山工業(有)",
+                  "compName": "丸山工業有限会社",
+                  "zip": "731-3810",
+                  "addr": "広島県山県郡安芸太田町戸河717番地26",
+                  "tel": "0826-28-2337"
+            },
+            {
+                  "name": "(株)山陽ホドス",
+                  "compName": "株式会社山陽ホドス",
+                  "zip": "731-3163",
+                  "addr": "広島県広島市安佐南区伴北4丁目2930",
+                  "tel": "082-848-5434"
+            },
+            {
+                  "name": "(有)西部パブリック",
+                  "compName": "有限会社西部パブリック",
+                  "zip": "731-3502",
+                  "addr": "広島県山県郡安芸太田町津浪1664番地",
+                  "tel": "0826-22-2122"
+            },
+            {
+                  "name": "西部環境(有)",
+                  "compName": "西部環境有限会社",
+                  "zip": "731-3812",
+                  "addr": "広島県山県郡安芸太田町大字寺領1512番地",
+                  "tel": "0826-28-1888"
+            },
+            {
+                  "name": "太田川森林組合",
+                  "compName": "太田川森林組合",
+                  "zip": "731-3664",
+                  "addr": "広島県山県郡安芸太田町上殿261番地",
+                  "tel": "0826-28-2244"
+            },
+            {
+                  "name": "(株)竹下建設",
+                  "compName": "株式会社竹下建設",
+                  "zip": "731-3621",
+                  "addr": "広島県山県郡安芸太田町下筒賀1152-1",
+                  "tel": "0826-22-0335"
+            },
+            {
+                  "name": "(株)Ｒeady Lyn",
+                  "compName": "株式会社Ｒeady Lyn",
+                  "zip": "731-3502",
+                  "addr": "広島県山県郡安芸太田町津浪1185番地",
+                  "tel": "090-3177-8846"
+            }
       ],
-      vehicles: [
-        { name: "2tダンプ (00-21)", type: "2tダンプ", no: "00-21" },
-        { name: "2tダンプ (67-37)", type: "2tダンプ", no: "67-37" },
-        { name: "2tトラック (67-38)", type: "2tトラック", no: "67-38" },
-        { name: "4tダンプ (23-19)", type: "4tダンプ", no: "23-19" },
-        { name: "4tダンプ (71-89)", type: "4tダンプ", no: "71-89" },
-        { name: "4tユニック (49-12)", type: "4tユニック", no: "49-12" },
-        { name: "軽トラック (11-67)", type: "軽トラック", no: "11-67" }
+      "vehicles": [
+            {
+                  "name": "2tダンプ (00-21)",
+                  "type": "2tダンプ",
+                  "no": "00-21"
+            },
+            {
+                  "name": "2tダンプ (67-37)",
+                  "type": "2tダンプ",
+                  "no": "67-37"
+            },
+            {
+                  "name": "2tトラック (67-38)",
+                  "type": "2tトラック",
+                  "no": "67-38"
+            },
+            {
+                  "name": "4tダンプ (23-19)",
+                  "type": "4tダンプ",
+                  "no": "23-19"
+            },
+            {
+                  "name": "4tダンプ (71-89)",
+                  "type": "4tダンプ",
+                  "no": "71-89"
+            },
+            {
+                  "name": "4tユニック (49-12)",
+                  "type": "4tユニック",
+                  "no": "49-12"
+            },
+            {
+                  "name": "軽トラック (11-67)",
+                  "type": "軽トラック",
+                  "no": "11-67"
+            }
       ],
-      vehicles2: [],
-      disposals: [
-        {"name": "あさやま工業(株)加計工場", "compName": "あさやま工業(株)加計工場", "zip": "731-3502", "addr": "広島県山県郡安芸太田町大字津浪40-2", "tel": "0826-23-0126"},
-        {"name": "あさやま工業(株)芸北工場", "compName": "あさやま工業(株)芸北工場", "zip": "731-3502", "addr": "広島県山県郡北広島町細見字野田ヶ原352-8", "tel": "0826-23-0126"},
-        {"name": "(株)河本組 木くず・がれき類破砕施設", "compName": "(株)河本組 木くず・がれき類破砕施設", "zip": "731-3831", "addr": "広島県山県郡安芸太田町大字川手字田之原1496番地", "tel": "0826-28-2317"},
-        {"name": "(株)サニックス 広島工場", "compName": "(株)サニックス 広島工場", "zip": "738-0202", "addr": "広島県廿日市市峠245-58", "tel": "0829-40-0353"},
-        {"name": "山陽工営株式会社", "compName": "山陽工営株式会社", "zip": "731-5151", "addr": "広島県広島市佐伯区五日市町大字保井田350番6", "tel": "082-927-2000"},
-        {"name": "ＣＥ広島合同会社", "compName": "ＣＥ広島合同会社", "zip": "731-0154", "addr": "広島県広島市安佐南区上安町336番地", "tel": "082-832-8260"},
-        {"name": "有限会社西部パブリック", "compName": "有限会社西部パブリック", "zip": "731-3701", "addr": "広島県山県郡安芸太田町大字津浪1664番地", "tel": "0826-28-2831"},
-        {"name": "ツネイシカムテックス株式会社", "compName": "ツネイシカムテックス株式会社", "zip": "720-0313", "addr": "広島県福山市沼隈町大字常石1083番地", "tel": "084-957-8521"},
-        {"name": "ツネイシカムテックス(株) 福山工場", "compName": "ツネイシカムテックス(株) 福山工場", "zip": "721-0956", "addr": "広島県福山市箕沖町107-5", "tel": "084-957-8521"},
-        {"name": "中村砕石(株)　湯来事業所", "compName": "中村砕石(株)　湯来事業所", "zip": "738-0601", "addr": "広島県広島市佐伯区湯来町和田341番地", "tel": "0829-83-0515"},
-        {"name": "(有)秀知産業　小濱工場", "compName": "(有)秀知産業　小濱工場", "zip": "731-1171", "addr": "広島市安佐北区安佐町小河内上小濱591-4", "tel": "082-835-2339"},
-        {"name": "広島舗材株式会社", "compName": "広島舗材株式会社", "zip": "731-3163", "addr": "広島県広島市安佐南区伴北4-2930", "tel": "082-848-1221"},
-        {"name": "フルハシEPO(株) 広島工場", "compName": "フルハシEPO(株) 広島工場", "zip": "738-0513", "addr": "広島県広島市佐伯区湯来町大字伏谷字今山137-33", "tel": "082-940-5001"},
-        {"name": "丸伸企業株式会社", "compName": "丸伸企業株式会社", "zip": "731-0213", "addr": "広島県広島市安佐北区三入南1丁目13-14", "tel": "082-818-1000"},
-        {"name": "みつぎ産業株式会社", "compName": "みつぎ産業株式会社", "zip": "734-0005", "addr": "広島県広島市南区宇品神田3丁目6番18号", "tel": "082-251-6368"},
-        {"name": "みつぎ産業(株) 広原山処分場", "compName": "みつぎ産業(株) 広原山処分場", "zip": "738-0202", "addr": "広島県廿日市市大字友田字広原山219番52ほか", "tel": "0829-74-3393"}
+      "vehicles2": [],
+      "disposals": [
+            {
+                  "name": "あさやま工業(株)加計",
+                  "compName": "あさやま工業(株)加計工場",
+                  "zip": "731-3502",
+                  "addr": "広島県山県郡安芸太田町大字津浪40-2",
+                  "tel": "0826-23-0126"
+            },
+            {
+                  "name": "あさやま工業(株)芸北",
+                  "compName": "あさやま工業(株)芸北工場",
+                  "zip": "731-3502",
+                  "addr": "広島県山県郡北広島町細見字野田ヶ原352-8",
+                  "tel": "0826-23-0126"
+            },
+            {
+                  "name": "(株)サニックス 広島",
+                  "compName": "(株)サニックス 広島工場",
+                  "zip": "738-0202",
+                  "addr": "広島県廿日市市峠245-58",
+                  "tel": "0829-40-0353"
+            },
+            {
+                  "name": "ﾂﾈｲｼｶﾑﾃｯｸｽ(株)",
+                  "compName": "ツネイシカムテックス株式会社",
+                  "zip": "720-0313",
+                  "addr": "広島県福山市沼隈町大字常石1083番地",
+                  "tel": "084-957-8521"
+            },
+            {
+                  "name": "ﾂﾈｲｼｶﾑﾃｯｸｽ(株) 福山",
+                  "compName": "ツネイシカムテックス(株) 福山工場",
+                  "zip": "721-0956",
+                  "addr": "広島県福山市箕沖町107-5",
+                  "tel": "084-957-8521"
+            },
+            {
+                  "name": "フルハシEPO(株) 広島",
+                  "compName": "フルハシEPO(株) 広島工場",
+                  "zip": "738-0513",
+                  "addr": "広島県広島市佐伯区湯来町大字伏谷字今山137-33",
+                  "tel": "082-940-5001"
+            },
+            {
+                  "name": "みつぎ産業(株) 広原山",
+                  "compName": "みつぎ産業(株) 広原山処分場",
+                  "zip": "738-0202",
+                  "addr": "広島県廿日市市大字友田字広原山219番52ほか",
+                  "tel": "0829-74-3393"
+            },
+            {
+                  "name": "(株)河本組 木くず･がれき",
+                  "compName": "(株)河本組 木くず・がれき類破砕施設",
+                  "zip": "731-3831",
+                  "addr": "広島県山県郡安芸太田町大字川手字田之原1496番地",
+                  "tel": "0826-28-2317"
+            },
+            {
+                  "name": "広島舗材(株)",
+                  "compName": "広島舗材株式会社",
+                  "zip": "731-3163",
+                  "addr": "広島県広島市安佐南区伴北4-2930",
+                  "tel": "082-848-1221"
+            },
+            {
+                  "name": "山陽工営(株)",
+                  "compName": "山陽工営株式会社",
+                  "zip": "731-5151",
+                  "addr": "広島県広島市佐伯区五日市町大字保井田350番6",
+                  "tel": "082-927-2000"
+            },
+            {
+                  "name": "(有)西部パブリック",
+                  "compName": "(有)西部パブリック　下筒賀施設",
+                  "zip": "731-3663",
+                  "addr": "広島県山県郡安芸太田町大字下筒賀1113番地",
+                  "tel": "0826-28-2831"
+            },
+            {
+                  "name": "中村砕石(株)　湯来",
+                  "compName": "中村砕石(株)　湯来事業所",
+                  "zip": "738-0601",
+                  "addr": "広島県広島市佐伯区湯来町和田341番地",
+                  "tel": "0829-83-0515"
+            }
       ],
-      dispComps: [
-        {"name": "あさやま工業株式会社", "compName": "あさやま工業株式会社", "zip": "731-3502", "addr": "広島県山県郡安芸太田町大字津浪29番地", "tel": "0826-23-0126"},
-        {"name": "株式会社河本組", "compName": "株式会社河本組", "zip": "731-3612", "addr": "広島県山県郡安芸太田町大字遊谷665番地1", "tel": "0826-28-2317"},
-        {"name": "(株)サニックス資源開発グループ", "compName": "(株)サニックス資源開発グループ", "zip": "812-0013", "addr": "福岡県福岡市博多区博多駅東2丁目1番23号", "tel": "092-436-8870"},
-        {"name": "山陽工営株式会社", "compName": "山陽工営株式会社", "zip": "731-5151", "addr": "広島県広島市佐伯区五日市町大字保井田350番6", "tel": "082-927-2000"},
-        {"name": "ＣＥ広島合同会社", "compName": "ＣＥ広島合同会社", "zip": "731-0154", "addr": "広島県広島市安佐南区上安町336番地", "tel": "082-832-8260"},
-        {"name": "西部環境有限会社", "compName": "西部環境有限会社", "zip": "731-3812", "addr": "広島県山県郡安芸太田町大字寺領1512番地", "tel": "0826-28-1888"},
-        {"name": "ツネイシカムテックス株式会社", "compName": "ツネイシカムテックス株式会社", "zip": "720-0313", "addr": "広島県福山市沼隈町大字常石1083番地", "tel": "084-957-8521"},
-        {"name": "中村砕石株式会社", "compName": "中村砕石株式会社", "zip": "738-0601", "addr": "広島県広島市安佐北区大林町50", "tel": "082-818-4355"},
-        {"name": "広島舗材株式会社", "compName": "広島舗材株式会社", "zip": "731-3163", "addr": "広島県広島市安佐南区伴北4-2930", "tel": "082-848-1221"},
-        {"name": "丸伸企業株式会社", "compName": "丸伸企業株式会社", "zip": "731-0213", "addr": "広島県広島市安佐北区三入南1丁目13-14", "tel": "082-818-1000"}
+      "dispComps": [
+            {
+                  "name": "あさやま工業(株)",
+                  "compName": "あさやま工業株式会社",
+                  "zip": "731-3502",
+                  "addr": "広島県山県郡安芸太田町大字津浪29番地",
+                  "tel": "0826-23-0126"
+            },
+            {
+                  "name": "(株)サニックスグループ",
+                  "compName": "(株)サニックス資源開発グループ",
+                  "zip": "812-0013",
+                  "addr": "福岡県福岡市博多区博多駅東2丁目1番23号",
+                  "tel": "092-436-8870"
+            },
+            {
+                  "name": "ﾂﾈｲｼｶﾑﾃｯｸｽ(株)",
+                  "compName": "ツネイシカムテックス株式会社",
+                  "zip": "720-0313",
+                  "addr": "広島県福山市沼隈町大字常石1083番地",
+                  "tel": "084-957-8521"
+            },
+            {
+                  "name": "フルハシＥＰＯ(株)",
+                  "compName": "フルハシＥＰＯ株式会社",
+                  "zip": "460-0022",
+                  "addr": "愛知県名古屋市中区金山1ｰ13ｰ13",
+                  "tel": "052-324-9088"
+            },
+            {
+                  "name": "(株)河本組",
+                  "compName": "株式会社河本組",
+                  "zip": "731-3612",
+                  "addr": "広島県山県郡安芸太田町大字遊谷665番地1",
+                  "tel": "0826-28-2317"
+            },
+            {
+                  "name": "広島舗材(株)",
+                  "compName": "広島舗材株式会社",
+                  "zip": "731-3163",
+                  "addr": "広島県広島市安佐南区伴北4-2930",
+                  "tel": "082-848-1221"
+            },
+            {
+                  "name": "山陽工営(株)",
+                  "compName": "山陽工営株式会社",
+                  "zip": "731-5151",
+                  "addr": "広島県広島市佐伯区五日市町大字保井田350番6",
+                  "tel": "082-927-2000"
+            },
+            {
+                  "name": "(有)西部パブリック",
+                  "compName": "有限会社西部パブリック",
+                  "zip": "731-3701",
+                  "addr": "広島県山県郡安芸太田町大字津浪1664番地",
+                  "tel": "0826-28-2831"
+            },
+            {
+                  "name": "西部環境(有)",
+                  "compName": "西部環境有限会社",
+                  "zip": "731-3812",
+                  "addr": "広島県山県郡安芸太田町大字寺領1512番地",
+                  "tel": "0826-28-1888"
+            },
+            {
+                  "name": "中村砕石(株)",
+                  "compName": "中村砕石株式会社",
+                  "zip": "738-0601",
+                  "addr": "広島県広島市安佐北区大林町50",
+                  "tel": "082-818-4355"
+            }
       ],
-      tsSites: [
-        {"name": "西部環境有限会社", "compName": "西部環境有限会社", "zip": "731-3821", "addr": "広島県山県郡安芸太田町大字土居317-1、318-1", "tel": "0826-28-1888"},
-        {"name": "(有)西部パブリック 下筒賀施設", "compName": "(有)西部パブリック 下筒賀施設", "zip": "731-3663", "addr": "広島県山県郡安芸太田町大字下筒賀1113番地", "tel": "0826-28-2831"}
+      "tsSites": [
+            {
+                  "name": "(有)西部ﾊﾟﾌﾞﾘｯｸ 下筒賀",
+                  "compName": "(有)西部パブリック 下筒賀施設",
+                  "zip": "731-3663",
+                  "addr": "広島県山県郡安芸太田町大字下筒賀1113番地",
+                  "tel": "0826-28-2831"
+            },
+            {
+                  "name": "西部環境有限会社",
+                  "compName": "西部環境有限会社",
+                  "zip": "731-3821",
+                  "addr": "広島県山県郡安芸太田町大字土居317-1、318-1",
+                  "tel": "0826-28-1888"
+            }
       ]
-    };
+};
 
     let activeTab = 'emitters';
+    let showDisplayNameCol = false;
     let currentMasters = JSON.parse(localStorage.getItem('manifest_masters')) || defaultMasters;
 
     // 安全初期化
@@ -877,29 +1220,90 @@
       }
     }
 
+    // 移行処理：表示名にタブ区切りの内容がそのまま入ってしまっているマスター項目を、正しく各項目へ振り分け直す
+    (function repairPastedMasterEntries() {
+      let changed = false;
+      Object.keys(currentMasters).forEach(key => {
+        if (!Array.isArray(currentMasters[key])) return;
+        currentMasters[key].forEach(item => {
+          if (item && typeof item.name === 'string' && item.name.indexOf('\t') !== -1) {
+            const parts = item.name.split('\t');
+            item.name = parts[0] || '';
+            if ('siteName' in item) item.siteName = parts[1] || item.siteName;
+            else if ('compName' in item) item.compName = parts[1] || item.compName;
+            if ('zip' in item) item.zip = parts[2] || item.zip;
+            if ('addr' in item) item.addr = parts[3] || item.addr;
+            if ('tel' in item) item.tel = parts[4] || item.tel;
+            changed = true;
+          }
+        });
+      });
+      if (changed) localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
+    })();
+
+    function cleanNameForSort(name) {
+      if (!name) return "";
+      return name.replace(/^(\(株\)|\(有\)|\(合\)|株式会社|有限会社|合同会社)\s*/, '').trim();
+    }
+
+    // 一般的な姓の読み（50音順ソート補助用）。完全網羅ではないが主要な姓をカバーする
+    const SURNAME_READING_MAP = {
+      '佐藤':'さとう','鈴木':'すずき','高橋':'たかはし','田中':'たなか','伊藤':'いとう','渡辺':'わたなべ','山本':'やまもと',
+      '中村':'なかむら','小林':'こばやし','加藤':'かとう','吉田':'よしだ','山田':'やまだ','佐々木':'ささき','山口':'やまぐち',
+      '松本':'まつもと','井上':'いのうえ','木村':'きむら','林':'はやし','斎藤':'さいとう','斉藤':'さいとう','清水':'しみず',
+      '山崎':'やまざき','森':'もり','池田':'いけだ','橋本':'はしもと','阿部':'あべ','石川':'いしかわ','山下':'やました',
+      '中島':'なかじま','石井':'いしい','小川':'おがわ','前田':'まえだ','岡田':'おかだ','長谷川':'はせがわ','藤田':'ふじた',
+      '後藤':'ごとう','近藤':'こんどう','村上':'むらかみ','遠藤':'えんどう','青木':'あおき','坂本':'さかもと','福田':'ふくだ',
+      '太田':'おおた','西村':'にしむら','藤井':'ふじい','岡本':'おかもと','中野':'なかの','小野':'おの','田村':'たむら',
+      '竹内':'たけうち','金子':'かねこ','和田':'わだ','中山':'なかやま','石田':'いしだ','上田':'うえだ','森田':'もりた',
+      '原田':'はらだ','柴田':'しばた','酒井':'さかい','工藤':'くどう','横山':'よこやま','宮崎':'みやざき','宮本':'みやもと',
+      '内田':'うちだ','高木':'たかぎ','安田':'やすだ','谷口':'たにぐち','片山':'かたやま','大野':'おおの','小島':'こじま',
+      '高田':'たかだ','桜井':'さくらい','千葉':'ちば','藤原':'ふじわら','川口':'かわぐち','松田':'まつだ','村田':'むらた',
+      '菅原':'すがわら','武田':'たけだ','上野':'うえの','杉山':'すぎやま','増田':'ますだ','平野':'ひらの','大西':'おおにし',
+      '新井':'あらい','西田':'にしだ','藤本':'ふじもと','金田':'かねだ','梅田':'うめだ','大村':'おおむら','滝口':'たきぐち',
+      '松栄':'まつえ','池谷':'いけがや','若林':'わかばやし','中川':'なかがわ','小松':'こまつ','三浦':'みうら','岩崎':'いわさき',
+      '木下':'きのした','野口':'のぐち','松井':'まつい','川崎':'かわさき','今井':'いまい','小山':'こやま','安藤':'あんどう',
+      '大塚':'おおつか','平田':'ひらた','久保':'くぼ','浜田':'はまだ','岡崎':'おかざき','関口':'せきぐち','須藤':'すどう'
+    };
+
+    function getSortReadingKey(cleanedName) {
+      const firstToken = cleanedName.split(/[\s　]/)[0];
+      if (SURNAME_READING_MAP[firstToken]) return SURNAME_READING_MAP[firstToken] + cleanedName.slice(firstToken.length);
+      if (SURNAME_READING_MAP[cleanedName]) return SURNAME_READING_MAP[cleanedName];
+      return cleanedName;
+    }
+
+    // 50音（かな・漢字）を先に、アルファベット表記はその下にアルファベット順で並べる汎用比較関数
+    function japaneseNameCompare(nameA, nameB) {
+      const isAlpha = (s) => /^[A-Za-zＡ-Ｚａ-ｚ]/.test(s);
+      const cleanA = cleanNameForSort(nameA || '');
+      const cleanB = cleanNameForSort(nameB || '');
+      const aIsAlpha = isAlpha(cleanA);
+      const bIsAlpha = isAlpha(cleanB);
+      if (aIsAlpha !== bIsAlpha) return aIsAlpha ? 1 : -1;
+      if (aIsAlpha && bIsAlpha) return cleanA.toUpperCase().localeCompare(cleanB.toUpperCase(), 'en');
+      return getSortReadingKey(cleanA).localeCompare(getSortReadingKey(cleanB), 'ja');
+    }
+
     // 移行処理：担当者・運転手の並び順を正しい50音順に修正する（既存の保存データにも適用）
     (function fixPersonSortOrder() {
-      const NAME_SORT_PRIORITY = { '梅田': 1, '大村': 2, '佐々木': 3, '滝口': 4, '西村': 5 };
       let changed = false;
       ['persons', 'surnames'].forEach(key => {
         if (!Array.isArray(currentMasters[key])) return;
         const before = JSON.stringify(currentMasters[key]);
-        currentMasters[key].sort((a, b) => {
-          const aKey = (a.name || '').split(/[\s　]/)[0];
-          const bKey = (b.name || '').split(/[\s　]/)[0];
-          const aP = NAME_SORT_PRIORITY[aKey];
-          const bP = NAME_SORT_PRIORITY[bKey];
-          if (aP !== undefined && bP !== undefined) return aP - bP;
-          if (aP !== undefined) return -1;
-          if (bP !== undefined) return 1;
-          return cleanNameForSort(a.name).localeCompare(cleanNameForSort(b.name), 'ja');
-        });
+        currentMasters[key].sort((a, b) => japaneseNameCompare(a.name, b.name));
         if (JSON.stringify(currentMasters[key]) !== before) changed = true;
       });
       if (changed) localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
     })();
 
     window.onload = function() {
+      try {
+        const pageEl = document.getElementById('manifest-page');
+        if (pageEl) pageEl.style.transform = '';
+        const wrapperEl = document.getElementById('page-wrapper');
+        if (wrapperEl) wrapperEl.style.removeProperty('zoom');
+      } catch(e) { console.error(e); }
       try { loadSavedLayout(); } catch(e) { console.error(e); initDefaultLayout(); }
       try { loadSavedBg(); } catch(e) { console.error(e); }
       try { initMasterSelects(); } catch(e) { console.error(e); }
@@ -1078,9 +1482,17 @@
       return /-(name|addr|comp)$/.test(id || '');
     }
 
+    // 排出事業者・運搬(1)(2)・処分受託者の「会社名」欄は10ptを基準にする（他のauto-fit欄は9pt）
+    const AUTO_FIT_BASE_SIZE_OVERRIDE = {
+      'f-emitter-name': 10,
+      'f-trans1-name': 10,
+      'f-trans2-name': 10,
+      'f-disp-comp-name': 10
+    };
+
     function autoFitFont(input) {
       if (!isAutoFitField(input.id)) return;
-      const baseSize = 9; // 常にこの基準サイズから判定する（過去に縮小されたサイズを基準にしない）
+      const baseSize = AUTO_FIT_BASE_SIZE_OVERRIDE[input.id] || 9;
       let size = baseSize;
       input.style.fontSize = size + 'pt';
       let guard = 0;
@@ -1093,15 +1505,9 @@
 
     // 名称欄からマスター未登録の入力を検知した際、マスターへの追加保存を確認するための設定
     const MASTER_NAME_FIELD_CONFIG = {
-      'f-emitter-name': { key: 'emitters', nameField: 'compName', zip: 'f-emitter-zip', addr: 'f-emitter-addr', tel: 'f-emitter-tel' },
-      'f-site-name': { key: 'sites', nameField: 'siteName', zip: 'f-site-zip', addr: 'f-site-addr', tel: 'f-site-tel' },
       'f-issue-dept': { key: 'depts', nameField: 'name' },
       'f-issue-person': { key: 'persons', nameField: 'name' },
-      'f-sign-trans1-person': { key: 'surnames', nameField: 'name' },
-      'f-trans1-name': { key: 'transporters', nameField: 'compName', zip: 'f-trans1-zip', addr: 'f-trans1-addr', tel: 'f-trans1-tel' },
-      'f-trans2-name': { key: 'transporters', nameField: 'compName', zip: 'f-trans2-zip', addr: 'f-trans2-addr', tel: 'f-trans2-tel' },
-      'f-disp-site-name': { key: 'disposals', nameField: 'compName', zip: 'f-disp-site-zip', addr: 'f-disp-site-addr', tel: 'f-disp-site-tel' },
-      'f-disp-comp-name': { key: 'dispComps', nameField: 'compName', zip: 'f-disp-comp-zip', addr: 'f-disp-comp-addr', tel: 'f-disp-comp-tel' }
+      'f-sign-trans1-person': { key: 'surnames', nameField: 'name' }
     };
 
     function offerSaveToMaster(input) {
@@ -1122,11 +1528,65 @@
       if (cfg.addr) entry.addr = getFieldValue(cfg.addr);
       if (cfg.tel) entry.tel = getFieldValue(cfg.tel);
       currentMasters[cfg.key].push(entry);
-      currentMasters[cfg.key].sort((a, b) => cleanNameForSort(a.name).localeCompare(cleanNameForSort(b.name), 'ja'));
+      currentMasters[cfg.key].sort((a, b) => japaneseNameCompare(a.name, b.name));
       localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
       initMasterSelects();
       try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
       showToast(`💾「${val}」をマスターに保存しました`);
+    }
+
+    // 会社名＋郵便番号／住所／電話番号のセットを持つグループを、マスターのどのカテゴリと照合するか
+    const GROUP_TO_MASTER_KEY = {
+      emitter: { key: 'emitters', nameField: 'compName' },
+      site: { key: 'sites', nameField: 'siteName' },
+      trans1: { key: 'transporters', nameField: 'compName' },
+      trans2: { key: 'transporters', nameField: 'compName' },
+      dispsite: { key: 'disposals', nameField: 'compName' },
+      dispcomp: { key: 'dispComps', nameField: 'compName' }
+    };
+
+    // 新規登録／既存マスターとの内容の食い違いを検知して、保存または更新を提案する
+    function checkMasterSync(groupKey) {
+      const masterInfo = GROUP_TO_MASTER_KEY[groupKey];
+      if (!masterInfo) return;
+      const fields = PASTE_FIELD_GROUPS[groupKey];
+      const zipId = fields.find(f => f.endsWith('-zip'));
+      const addrId = fields.find(f => f.endsWith('-addr'));
+      const nameId = fields.find(f => f.endsWith('-name'));
+      const telId = fields.find(f => f.endsWith('-tel'));
+      const nameVal = (getFieldValue(nameId) || '').trim();
+      if (!nameVal) return;
+
+      const list = safeGetArray(currentMasters[masterInfo.key]);
+      const existing = list.find(it => (it[masterInfo.nameField] || it.name || '') === nameVal);
+      const curZip = getFieldValue(zipId), curAddr = getFieldValue(addrId), curTel = getFieldValue(telId);
+
+      if (existing) {
+        const diffs = [];
+        if ((existing.zip || '') !== (curZip || '')) diffs.push('郵便番号');
+        if ((existing.addr || '') !== (curAddr || '')) diffs.push('住所');
+        if ((existing.tel || '') !== (curTel || '')) diffs.push('電話番号');
+        if (diffs.length === 0) return;
+        const ok = confirm(`⚠️ マスターデータの更新確認\n\n「${nameVal}」は既にマスターに登録されていますが、${diffs.join('・')}の内容が異なります。\n\nここで「OK」を押すと、マスターに保存されている情報が今の内容に書き換わります。今後この項目をプルダウンで選ぶと、この新しい内容が使われます。\n\n本当に更新してよろしいですか？`);
+        if (!ok) return;
+        existing.zip = curZip; existing.addr = curAddr; existing.tel = curTel;
+        localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
+        initMasterSelects();
+        try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
+        showToast(`💾「${nameVal}」のマスター情報を更新しました`);
+      } else {
+        const ok = confirm(`「${nameVal}」はマスターに登録されていません。\n\nこの内容をマスターに保存して、次回から選べるようにしますか？`);
+        if (!ok) return;
+        const entry = { name: nameVal };
+        entry[masterInfo.nameField] = nameVal;
+        entry.zip = curZip; entry.addr = curAddr; entry.tel = curTel;
+        currentMasters[masterInfo.key].push(entry);
+        currentMasters[masterInfo.key].sort((a, b) => japaneseNameCompare(a.name, b.name));
+        localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
+        initMasterSelects();
+        try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
+        showToast(`💾「${nameVal}」をマスターに保存しました`);
+      }
     }
 
     // 車両情報（車両番号＋車種）はnameフィールド1本ではなく2項目セットなので専用の判定を行う
@@ -1144,8 +1604,21 @@
       const type = getFieldValue(cfg.typeId).trim();
       if (!no || !type) return; // 車両番号・車種の両方が揃うまでは確認しない
       const list = safeGetArray(currentMasters[cfg.key]);
-      const alreadyExists = list.some(it => it.no === no);
-      if (alreadyExists) return;
+      const existing = list.find(it => it.no === no);
+
+      if (existing) {
+        if ((existing.type || '') === type) return; // 内容が同じなら何もしない
+        const ok = confirm(`⚠️ マスターデータの更新確認\n\n車両番号「${no}」は既にマスターに登録されていますが、車種が「${existing.type}」→「${type}」に変わっています。\n\nここで「OK」を押すと、マスターに保存されている情報が今の内容に書き換わります。今後この項目をプルダウンで選ぶと、この新しい内容が使われます。\n\n本当に更新してよろしいですか？`);
+        if (!ok) return;
+        existing.type = type;
+        existing.name = `${type} (${no})`;
+        currentMasters[cfg.key].sort((a, b) => (a.type || '').localeCompare(b.type || '', 'ja') || (a.no || '').localeCompare(b.no || '', 'ja'));
+        localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
+        initMasterSelects();
+        try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
+        showToast(`💾 車両「${no}」のマスター情報を更新しました`);
+        return;
+      }
 
       const label = `${type} (${no})`;
       const ok = confirm(`「${label}」はマスターに登録されていません。\n\nこの内容をマスターに保存して、次回から選べるようにしますか？`);
@@ -1157,6 +1630,82 @@
       initMasterSelects();
       try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
       showToast(`💾「${label}」をマスターに保存しました`);
+    }
+
+    // タブ区切りで貼り付けられた内容（マスターのコピー機能の出力形式）を、
+    // 対応する各欄（郵便番号・住所・名称・電話番号）へ自動的に振り分ける
+    const PASTE_FIELD_GROUPS = {
+      emitter: ['f-emitter-zip', 'f-emitter-addr', 'f-emitter-name', 'f-emitter-tel'],
+      site: ['f-site-zip', 'f-site-addr', 'f-site-name', 'f-site-tel'],
+      trans1: ['f-trans1-zip', 'f-trans1-addr', 'f-trans1-name', 'f-trans1-tel'],
+      trans2: ['f-trans2-zip', 'f-trans2-addr', 'f-trans2-name', 'f-trans2-tel'],
+      dispsite: ['f-disp-site-zip', 'f-disp-site-addr', 'f-disp-site-name', 'f-disp-site-tel'],
+      dispcomp: ['f-disp-comp-zip', 'f-disp-comp-addr', 'f-disp-comp-name', 'f-disp-comp-tel'],
+      tssite: ['f-ts-site-zip', 'f-ts-site-addr', 'f-ts-site-tel']
+    };
+    const PASTE_ID_TO_GROUP = {};
+    Object.values(PASTE_FIELD_GROUPS).forEach(fields => {
+      fields.forEach(id => { PASTE_ID_TO_GROUP[id] = fields; });
+    });
+    const FIELD_ID_TO_GROUP_KEY = {};
+    Object.keys(PASTE_FIELD_GROUPS).forEach(gk => {
+      PASTE_FIELD_GROUPS[gk].forEach(fid => { FIELD_ID_TO_GROUP_KEY[fid] = gk; });
+    });
+
+    function distributeTabSeparatedValue(input, text) {
+      const group = PASTE_ID_TO_GROUP[input.id];
+      if (!group) return false;
+      const parts = text.split('\t'); // [プルダウン表示名, 会社名, 郵便番号, 住所, 電話番号]
+      pushUndoState();
+      group.forEach(fid => {
+        if (fid.endsWith('-zip')) setFieldValue(fid, parts[2] || '');
+        else if (fid.endsWith('-addr')) setFieldValue(fid, parts[3] || '');
+        else if (fid.endsWith('-name')) setFieldValue(fid, parts[1] || '');
+        else if (fid.endsWith('-tel')) setFieldValue(fid, parts[4] || '');
+      });
+      saveLayoutAndBg(false);
+      showToast('📋 貼り付けた内容をそれぞれの欄へ振り分けました');
+      return true;
+    }
+
+    function handleGroupPaste(e, input) {
+      const clip = e.clipboardData || window.clipboardData;
+      const text = clip ? clip.getData('text') : '';
+      if (!text || text.indexOf('\t') === -1) return; // タブ区切りでなければ通常の貼り付けに任せる
+      if (!PASTE_ID_TO_GROUP[input.id]) return;
+      e.preventDefault();
+      distributeTabSeparatedValue(input, text);
+    }
+
+    // 郵便番号→住所の自動入力（公開APIを使用。ネット接続がない場合は何もせず、従来通り手入力できる）
+    async function lookupZipAddress(zip) {
+      const cleaned = (zip || '').replace(/[^0-9]/g, '');
+      if (cleaned.length !== 7) return null;
+      try {
+        const res = await fetch('https://zipcloud.ibsnet.co.jp/api/search?zipcode=' + cleaned);
+        const data = await res.json();
+        if (data && data.results && data.results[0]) {
+          const r = data.results[0];
+          return (r.address1 || '') + (r.address2 || '') + (r.address3 || '');
+        }
+      } catch (e) {
+        // オフライン等で失敗した場合は何もしない（従来通り手入力できる）
+      }
+      return null;
+    }
+
+    function attachZipAutoLookup(zipInput, addrFieldId) {
+      zipInput.addEventListener('blur', async function() {
+        const addrEl = document.getElementById(addrFieldId);
+        if (!addrEl || addrEl.value.trim() !== '') return; // 既に住所が入っていれば上書きしない
+        const addr = await lookupZipAddress(zipInput.value);
+        if (addr) {
+          pushUndoState();
+          setFieldValue(addrFieldId, addr);
+          showToast('📮 郵便番号から住所を自動入力しました（続きをご入力ください）');
+          saveLayoutAndBg(false);
+        }
+      });
     }
 
     function bindInputEvents(input, box) {
@@ -1178,7 +1727,21 @@
         }
       };
 
+      if (PASTE_ID_TO_GROUP[input.id]) {
+        input.addEventListener('paste', function(e) { handleGroupPaste(e, input); });
+      }
+
+      if (input.id && input.id.endsWith('-zip') && PASTE_ID_TO_GROUP[input.id]) {
+        const addrFieldId = PASTE_ID_TO_GROUP[input.id].find(id => id.endsWith('-addr'));
+        if (addrFieldId) attachZipAutoLookup(input, addrFieldId);
+      }
+
       input.oninput = function() {
+        if (PASTE_ID_TO_GROUP[input.id] && input.value.indexOf('\t') !== -1) {
+          const text = input.value;
+          input.value = '';
+          if (distributeTabSeparatedValue(input, text)) return;
+        }
         if (input.classList.contains('qty-val')) {
           if (input.id && input.id.startsWith('f-qty-')) {
             const wtype = input.id.replace('f-qty-', '');
@@ -1201,6 +1764,9 @@
         }
         if (MASTER_NAME_FIELD_CONFIG[input.id]) {
           offerSaveToMaster(input);
+        }
+        if (FIELD_ID_TO_GROUP_KEY[input.id]) {
+          checkMasterSync(FIELD_ID_TO_GROUP_KEY[input.id]);
         }
         if (VEHICLE_FIELD_CONFIG[input.id]) {
           offerSaveVehicleToMaster(input);
@@ -1291,7 +1857,7 @@
 
     function toggleMode() {
       if (!isEditMode) {
-        const ok = confirm('編集モードに入ります。\n\n枠や▼ボタンの位置を動かせる状態になります。せっかく合わせた位置がズレる可能性があるので、位置調整の必要がない場合は入力モードのままにしてください。\n\n編集モードにしますか？');
+        const ok = confirm('編集モードに入ります。\n\n枠や▼ボタンの位置を動かせる状態になります。位置調整が必要な時だけお使いください。\n\n編集モードにしますか？');
         if (!ok) return;
       }
       isEditMode = !isEditMode;
@@ -1391,7 +1957,7 @@
       const siteName = getFieldValue('f-site-name');
       setSelectByMatch('sel-site', currentMasters.sites, it => (it.siteName || it.name) === siteName);
 
-      setSelectValue('sel-inter-slash', isSlashActive('slash-inter') ? 'SLASH' : '');
+      syncSlashMarkerVisuals();
 
       const trans1Name = getFieldValue('f-trans1-name');
       setSelectByMatch('sel-trans1', currentMasters.transporters, it => it.compName === trans1Name);
@@ -1402,9 +1968,7 @@
       const veh1No = getFieldValue('f-trans1-veh-no');
       setSelectByMatch('sel-veh1', currentMasters.vehicles, it => it.no === veh1No);
 
-      if (isSlashActive('slash-trans2')) {
-        setSelectValue('sel-trans2', 'SLASH');
-      } else {
+      if (!isSlashActive('slash-trans2')) {
         const trans2Name = getFieldValue('f-trans2-name');
         setSelectByMatch('sel-trans2', currentMasters.transporters, it => it.compName === trans2Name);
       }
@@ -1412,9 +1976,7 @@
       const veh2No = getFieldValue('f-trans2-veh-no');
       setSelectByMatch('sel-veh2', currentMasters.vehicles2, it => it.no === veh2No);
 
-      if (isSlashActive('slash-ts-site')) {
-        setSelectValue('sel-ts-site', 'SLASH');
-      } else {
+      if (!isSlashActive('slash-ts-site')) {
         const tsZip = getFieldValue('f-ts-site-zip');
         const tsAddr = getFieldValue('f-ts-site-addr');
         setSelectByMatch('sel-ts-site', currentMasters.tsSites, it => (tsZip || tsAddr) && it.zip === tsZip && it.addr === tsAddr);
@@ -1537,23 +2099,6 @@
       renderStateList();
     }
 
-    function extractDataFromLayoutArray(layout) {
-      const data = {};
-      (layout || []).forEach(item => {
-        if ((item.type === 'input' || item.type === 'textarea') && item.id) {
-          data['val:' + item.id] = item.val || '';
-        }
-        if (item.type === 'circle') {
-          const key = 'circle:' + (item.groupName || '') + ':' + (item.text || '').trim();
-          data[key] = !!item.isActive;
-        }
-        if (item.type === 'slash' && item.id) {
-          data['slash:' + item.id] = !!item.hasSlash;
-        }
-      });
-      return data;
-    }
-
     function loadNamedState(name) {
       const states = getSavedStates();
       const state = states[name];
@@ -1563,8 +2108,8 @@
       if (state.data) {
         applyDataSnapshot(state.data);
       } else if (state.layout) {
-        // 旧形式（位置情報込み）の保存データでも、位置は絶対に反映せず内容だけ復元する
-        applyDataSnapshot(extractDataFromLayoutArray(state.layout));
+        // 旧形式（位置情報込み）の保存データへの後方互換
+        applyLayoutArray(state.layout);
       }
       saveLayoutAndBg(false);
       try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
@@ -1633,7 +2178,7 @@
     }
 
     function resetToDefaultPositions() {
-      if (!confirm('すべての枠・▼ボタンの位置とサイズを初期状態に戻します。\n入力されている内容（会社名や数量など）は消えません。\n\nよろしいですか？')) return;
+      if (!confirm('すべての枠・▼ボタンの位置とサイズを、ファイルに保存されている初期値に戻します。\n入力されている内容（会社名や数量など）は消えません。\n\n※ここまで手元で微調整した位置は上書きされます。よろしいですか？')) return;
       pushUndoState();
 
       const defaultById = {};
@@ -1659,7 +2204,7 @@
       localStorage.removeItem(PICKER_POS_KEY);
 
       saveLayoutAndBg(false);
-      showToast('📍 位置・サイズを初期状態に戻しました');
+      showToast('📍 位置・サイズをファイルの初期値に戻しました');
     }
 
     function savePickerPositions() {
@@ -1716,7 +2261,15 @@
       const boxes = {};
       document.querySelectorAll('.item-box').forEach(box => {
         const namedEl = box.querySelector('input, textarea, .slash-box');
-        const id = namedEl ? namedEl.id : '';
+        let id = namedEl ? namedEl.id : '';
+        if (!id) {
+          // 〇印など名前(id)を持たない枠は、グループ名+表示文字で識別する
+          const circle = box.querySelector('.circle-mark');
+          if (circle) {
+            const groupCls = Array.from(circle.classList).find(c => c.startsWith('group-'));
+            id = 'circle:' + (groupCls ? groupCls.replace('group-', '') : 'nogroup') + ':' + circle.textContent.trim();
+          }
+        }
         if (id) {
           boxes[id] = {
             x: Math.round((parseFloat(box.style.left) || 0) * 100) / 100,
@@ -1728,7 +2281,16 @@
       });
 
       const output = { pickers: pickers, boxes: boxes };
-      window.prompt('この内容を全部コピーしてClaudeに貼り付けてください（▼ボタンの位置＋各入力枠の位置・サイズが含まれます）：', JSON.stringify(output, null, 2));
+      const text = JSON.stringify(output, null, 2);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert('✅ 全項目（' + Object.keys(boxes).length + '個の枠 + ' + Object.keys(pickers).length + '個の▼ボタン）をクリップボードにコピーしました。\n\nそのままClaudeに貼り付けてください。');
+        }).catch(() => {
+          window.prompt('コピーに失敗しました。以下を手動で全選択してコピーしてください（Ctrl+A → Ctrl+C）：', text);
+        });
+      } else {
+        window.prompt('この内容を全部（Ctrl+Aで全選択してから）コピーしてClaudeに貼り付けてください：', text);
+      }
     }
 
     // ===== 個別クリア機能（白紙印刷用） =====
@@ -1813,11 +2375,6 @@
       }
     }
 
-    function cleanNameForSort(name) {
-      if (!name) return "";
-      return name.replace(/^(\(株\)|\(有\)|\(合\)|株式会社|有限会社|合同会社)\s*/, '').trim();
-    }
-
     function initMasterSelects() {
       fillSelectEmitters('sel-emitter', currentMasters.emitters);
       fillSelectDepts('sel-dept', currentMasters.depts);
@@ -1840,9 +2397,9 @@
     function fillSelectEmitters(id, items) {
       const sel = document.getElementById(id);
       if (!sel) return;
-      sel.innerHTML = '<option value="">-- 排出者 --</option>';
+      sel.innerHTML = '<option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option>';
       const safeItems = safeGetArray(items);
-      const sorted = [...safeItems].sort((a,b) => cleanNameForSort(a.name).localeCompare(cleanNameForSort(b.name), 'ja'));
+      const sorted = [...safeItems].sort((a,b) => japaneseNameCompare(a.name, b.name));
       sorted.forEach(item => {
         sel.innerHTML += `<option value="${safeItems.indexOf(item)}">${item.name}</option>`;
       });
@@ -1851,9 +2408,9 @@
     function fillSelectDepts(id, items) {
       const sel = document.getElementById(id);
       if (!sel) return;
-      sel.innerHTML = '<option value="">-- 所属部署 --</option>';
+      sel.innerHTML = '<option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option>';
       const safeItems = safeGetArray(items);
-      const sorted = [...safeItems].sort((a,b) => (a.name || '').localeCompare(b.name || '', 'ja'));
+      const sorted = [...safeItems].sort((a,b) => japaneseNameCompare(a.name, b.name));
       sorted.forEach(item => {
         sel.innerHTML += `<option value="${safeItems.indexOf(item)}">${item.name}</option>`;
       });
@@ -1862,9 +2419,9 @@
     function fillSelectSites(id, items) {
       const sel = document.getElementById(id);
       if (!sel) return;
-      sel.innerHTML = '<option value="">-- 事業場 --</option>';
+      sel.innerHTML = '<option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option>';
       const safeItems = safeGetArray(items);
-      const sorted = [...safeItems].sort((a,b) => (a.name || '').localeCompare(b.name || '', 'ja'));
+      const sorted = [...safeItems].sort((a,b) => japaneseNameCompare(a.name, b.name));
       sorted.forEach(item => {
         sel.innerHTML += `<option value="${safeItems.indexOf(item)}">${item.name}</option>`;
       });
@@ -1873,10 +2430,10 @@
     function fillSelectTransporters1(id, items) {
       const sel = document.getElementById(id);
       if (!sel) return;
-      sel.innerHTML = '<option value="">-- 運搬者(1) --</option>';
+      sel.innerHTML = '<option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option>';
       const safeItems = safeGetArray(items);
       const tsutsuga = safeItems.filter(i => i.name.includes("筒賀建設"));
-      const others = safeItems.filter(i => !i.name.includes("筒賀建設")).sort((a,b) => cleanNameForSort(a.name).localeCompare(cleanNameForSort(b.name), 'ja'));
+      const others = safeItems.filter(i => !i.name.includes("筒賀建設")).sort((a,b) => japaneseNameCompare(a.name, b.name));
       
       tsutsuga.forEach(item => sel.innerHTML += `<option value="${safeItems.indexOf(item)}">${item.name}</option>`);
       others.forEach(item => sel.innerHTML += `<option value="${safeItems.indexOf(item)}">${item.name}</option>`);
@@ -1885,11 +2442,11 @@
     function fillSelectTransporters2(id, items) {
       const sel = document.getElementById(id);
       if (!sel) return;
-      sel.innerHTML = '<option value="">-- 運搬者(2) --</option><option value="SLASH">【斜線を引く】</option>';
+      sel.innerHTML = '<option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option>';
       const safeItems = safeGetArray(items);
       const sorted = safeItems
         .filter(i => !i.name.includes("筒賀建設"))
-        .sort((a,b) => cleanNameForSort(a.name).localeCompare(cleanNameForSort(b.name), 'ja'));
+        .sort((a,b) => japaneseNameCompare(a.name, b.name));
       sorted.forEach(item => {
         sel.innerHTML += `<option value="${safeItems.indexOf(item)}">${item.name}</option>`;
       });
@@ -1899,12 +2456,12 @@
       const sel = document.getElementById(id);
       if (!sel) return;
       if (id === 'sel-ts-site') {
-        sel.innerHTML = '<option value="">-- 積替え保管 --</option><option value="SLASH">【斜線を引く】</option>';
+        sel.innerHTML = '<option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option>';
       } else {
-        sel.innerHTML = '<option value="">-- 処分施設 --</option>';
+        sel.innerHTML = '<option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option>';
       }
       const safeItems = safeGetArray(items);
-      const sorted = [...safeItems].sort((a,b) => cleanNameForSort(a.name).localeCompare(cleanNameForSort(b.name), 'ja'));
+      const sorted = [...safeItems].sort((a,b) => japaneseNameCompare(a.name, b.name));
       sorted.forEach(item => {
         sel.innerHTML += `<option value="${safeItems.indexOf(item)}">${item.name}</option>`;
       });
@@ -1913,7 +2470,7 @@
     function fillSelectPersons(id, items) {
       const sel = document.getElementById(id);
       if (!sel) return;
-      sel.innerHTML = '<option value="">-- 担当者 --</option>';
+      sel.innerHTML = '<option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option>';
       const safeItems = safeGetArray(items);
       safeItems.forEach((item, i) => {
         sel.innerHTML += `<option value="${i}">${item.name}</option>`;
@@ -1923,7 +2480,7 @@
     function fillSelectSurnames(id, items) {
       const sel = document.getElementById(id);
       if (!sel) return;
-      sel.innerHTML = '<option value="">-- 運搬者 --</option>';
+      sel.innerHTML = '<option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option>';
       const safeItems = safeGetArray(items);
       safeItems.forEach((item, i) => {
         sel.innerHTML += `<option value="${i}">${item.name}</option>`;
@@ -1933,7 +2490,7 @@
     function fillSelectVehicles(id, items) {
       const sel = document.getElementById(id);
       if (!sel) return;
-      sel.innerHTML = '<option value="">-- 車両 --</option>';
+      sel.innerHTML = '<option value="" style="color:#dc2626; font-style:italic;">－ 情報を消す －</option>';
       const safeItems = safeGetArray(items);
       const sorted = [...safeItems].sort((a,b) => (a.type || '').localeCompare(b.type || '', 'ja') || (a.no || '').localeCompare(b.no || '', 'ja'));
       sorted.forEach(item => {
@@ -1950,6 +2507,11 @@
         setFieldValue('f-emitter-addr', d.addr);
         setFieldValue('f-emitter-name', d.compName);
         setFieldValue('f-emitter-tel', d.tel);
+      } else {
+        setFieldValue('f-emitter-zip', '');
+        setFieldValue('f-emitter-addr', '');
+        setFieldValue('f-emitter-name', '');
+        setFieldValue('f-emitter-tel', '');
       }
       saveLayoutAndBg(false);
     }
@@ -1957,9 +2519,7 @@
     function applyDept() {
       pushUndoState();
       const idx = document.getElementById('sel-dept').value;
-      if (idx !== "" && currentMasters.depts[idx]) {
-        setFieldValue('f-issue-dept', currentMasters.depts[idx].name || '');
-      }
+      setFieldValue('f-issue-dept', (idx !== "" && currentMasters.depts[idx]) ? (currentMasters.depts[idx].name || '') : '');
       saveLayoutAndBg(false);
     }
 
@@ -1972,6 +2532,11 @@
         setFieldValue('f-site-addr', d.addr || '');
         setFieldValue('f-site-name', d.siteName || d.name || '');
         setFieldValue('f-site-tel', d.tel || '');
+      } else {
+        setFieldValue('f-site-zip', '');
+        setFieldValue('f-site-addr', '');
+        setFieldValue('f-site-name', '');
+        setFieldValue('f-site-tel', '');
       }
       saveLayoutAndBg(false);
     }
@@ -1979,18 +2544,13 @@
     function applyIssuePerson() {
       pushUndoState();
       const idx = document.getElementById('sel-issue-person').value;
-      if (idx !== "" && currentMasters.persons[idx]) {
-        const d = currentMasters.persons[idx];
-        setFieldValue('f-issue-person', d.name || '');
-      }
+      setFieldValue('f-issue-person', (idx !== "" && currentMasters.persons[idx]) ? (currentMasters.persons[idx].name || '') : '');
       saveLayoutAndBg(false);
     }
 
     function applyDriverName(idx) {
       pushUndoState();
-      if (idx !== "" && currentMasters.surnames[idx]) {
-        setFieldValue('f-sign-trans1-person', currentMasters.surnames[idx].name || '');
-      }
+      setFieldValue('f-sign-trans1-person', (idx !== "" && currentMasters.surnames[idx]) ? (currentMasters.surnames[idx].name || '') : '');
       saveLayoutAndBg(false);
     }
 
@@ -2002,11 +2562,15 @@
         const d = list[idx];
         setFieldValue('f-trans' + num + '-veh-no', d.no || '');
         setFieldValue('f-trans' + num + '-veh-type', d.type || '');
+      } else {
+        setFieldValue('f-trans' + num + '-veh-no', '');
+        setFieldValue('f-trans' + num + '-veh-type', '');
       }
       saveLayoutAndBg(false);
     }
 
     function syncSlashDisabledStates() {
+      syncSlashMarkerVisuals();
       const trans2Box = document.getElementById('slash-trans2');
       const trans2Slashed = trans2Box && trans2Box.closest('.item-box').classList.contains('has-slash');
       setFieldsDisabled(['f-trans2-zip','f-trans2-addr','f-trans2-name','f-trans2-tel','f-trans2-veh-no','f-trans2-veh-type'], !!trans2Slashed);
@@ -2031,12 +2595,9 @@
       });
     }
 
-    function applyTrans(num) {
-      pushUndoState();
-      const val = document.getElementById('sel-trans' + num).value;
+    function setTrans2Slash(active) {
       const slashBox = document.getElementById('slash-trans2');
-
-      if (val === "SLASH" && num === 2) {
+      if (active) {
         if (slashBox) slashBox.closest('.item-box').classList.add('has-slash');
         setFieldValue('f-trans2-zip', '');
         setFieldValue('f-trans2-addr', '');
@@ -2045,28 +2606,40 @@
         setFieldValue('f-trans2-veh-no', '');
         setFieldValue('f-trans2-veh-type', '');
         setFieldsDisabled(['f-trans2-zip','f-trans2-addr','f-trans2-name','f-trans2-tel','f-trans2-veh-no','f-trans2-veh-type'], true);
-        
-        // 運搬2用コントロール＆〇印(ts2)を完全ロック・非活性化
         document.querySelectorAll('.group-ts2').forEach(c => {
           c.classList.remove('active');
           c.classList.add('disabled-by-slash');
         });
         const veh2Sel = document.getElementById('sel-veh2');
         if (veh2Sel) veh2Sel.disabled = true;
-
-        saveLayoutAndBg(false);
-        return;
-      }
-
-      if (num === 2) {
+        setSelectValue('sel-trans2', '');
+      } else {
         if (slashBox) slashBox.closest('.item-box').classList.remove('has-slash');
         document.querySelectorAll('.group-ts2').forEach(c => c.classList.remove('disabled-by-slash'));
         const veh2Sel = document.getElementById('sel-veh2');
         if (veh2Sel) veh2Sel.disabled = false;
         setFieldsDisabled(['f-trans2-zip','f-trans2-addr','f-trans2-name','f-trans2-tel','f-trans2-veh-no','f-trans2-veh-type'], false);
       }
+    }
 
-      if (val !== "" && currentMasters.transporters[val]) {
+    function applyTrans(num) {
+      pushUndoState();
+      const val = document.getElementById('sel-trans' + num).value;
+
+      if (num === 2) setTrans2Slash(false);
+
+      if (val === "") {
+        // 空欄選択＝この項目をクリア
+        setFieldValue('f-trans' + num + '-zip', '');
+        setFieldValue('f-trans' + num + '-addr', '');
+        setFieldValue('f-trans' + num + '-name', '');
+        setFieldValue('f-trans' + num + '-tel', '');
+        if (num === 1) setFieldValue('f-sign-trans1-comp', '');
+        saveLayoutAndBg(false);
+        return;
+      }
+
+      if (currentMasters.transporters[val]) {
         const d = currentMasters.transporters[val];
         setFieldValue('f-trans' + num + '-zip', d.zip);
         setFieldValue('f-trans' + num + '-addr', d.addr);
@@ -2077,33 +2650,40 @@
       saveLayoutAndBg(false);
     }
 
-    function applyTsSite() {
-      pushUndoState();
-      const val = document.getElementById('sel-ts-site').value;
+    function setTsSiteSlash(active) {
       const slashBox = document.getElementById('slash-ts-site');
-
-      if (val === "SLASH") {
+      if (active) {
         if (slashBox) slashBox.closest('.item-box').classList.add('has-slash');
         setFieldValue('f-ts-site-zip', '');
         setFieldValue('f-ts-site-addr', '');
         setFieldValue('f-ts-site-tel', '');
         setFieldsDisabled(['f-ts-site-zip','f-ts-site-addr','f-ts-site-tel'], true);
-        
-        // 積替え保管の〇印(yu)を完全ロック・非活性化
         document.querySelectorAll('.group-yu').forEach(c => {
           c.classList.remove('active');
           c.classList.add('disabled-by-slash');
         });
+        setSelectValue('sel-ts-site', '');
+      } else {
+        if (slashBox) slashBox.closest('.item-box').classList.remove('has-slash');
+        document.querySelectorAll('.group-yu').forEach(c => c.classList.remove('disabled-by-slash'));
+        setFieldsDisabled(['f-ts-site-zip','f-ts-site-addr','f-ts-site-tel'], false);
+      }
+    }
 
+    function applyTsSite() {
+      pushUndoState();
+      const val = document.getElementById('sel-ts-site').value;
+      setTsSiteSlash(false);
+
+      if (val === "") {
+        setFieldValue('f-ts-site-zip', '');
+        setFieldValue('f-ts-site-addr', '');
+        setFieldValue('f-ts-site-tel', '');
         saveLayoutAndBg(false);
         return;
       }
 
-      if (slashBox) slashBox.closest('.item-box').classList.remove('has-slash');
-      document.querySelectorAll('.group-yu').forEach(c => c.classList.remove('disabled-by-slash'));
-      setFieldsDisabled(['f-ts-site-zip','f-ts-site-addr','f-ts-site-tel'], false);
-
-      if (val !== "" && currentMasters.tsSites[val]) {
+      if (currentMasters.tsSites[val]) {
         const d = currentMasters.tsSites[val];
         setFieldValue('f-ts-site-zip', d.zip);
         setFieldValue('f-ts-site-addr', d.addr);
@@ -2112,14 +2692,10 @@
       saveLayoutAndBg(false);
     }
 
-    function applyInterSlash() {
-      pushUndoState();
-      const val = document.getElementById('sel-inter-slash').value;
+    function setInterSlash(active) {
       const slashBox = document.getElementById('slash-inter');
-
-      if (val === "SLASH") {
+      if (active) {
         if (slashBox) slashBox.closest('.item-box').classList.add('has-slash');
-        // 中間処理の〇印(inter_select)を完全ロック・非活性化
         document.querySelectorAll('.group-inter_select').forEach(c => {
           c.classList.remove('active');
           c.classList.add('disabled-by-slash');
@@ -2128,7 +2704,29 @@
         if (slashBox) slashBox.closest('.item-box').classList.remove('has-slash');
         document.querySelectorAll('.group-inter_select').forEach(c => c.classList.remove('disabled-by-slash'));
       }
+    }
+
+    // 〼マークを押すたびに、その区画の斜線をON/OFF切り替える
+    function toggleSlashMark(target) {
+      pushUndoState();
+      if (target === 'inter') {
+        setInterSlash(!isSlashActive('slash-inter'));
+      } else if (target === 'trans2') {
+        setTrans2Slash(!isSlashActive('slash-trans2'));
+      } else if (target === 'tssite') {
+        setTsSiteSlash(!isSlashActive('slash-ts-site'));
+      }
       saveLayoutAndBg(false);
+      syncSlashMarkerVisuals();
+    }
+
+    // 〼マークの見た目（ON状態の強調表示）を、実際の斜線の有無に合わせて同期する
+    function syncSlashMarkerVisuals() {
+      const map = { inter: 'slash-inter', trans2: 'slash-trans2', tssite: 'slash-ts-site' };
+      Object.keys(map).forEach(target => {
+        const btn = document.querySelector('.slash-marker-btn[data-slash-target="' + target + '"]');
+        if (btn) btn.classList.toggle('active', isSlashActive(map[target]));
+      });
     }
 
     // 施設名から親会社（処分受託者）を推定して自動補完する
@@ -2152,6 +2750,50 @@
       return best;
     }
 
+    // 処分受託者（親会社）の名称から、対応する運搬先の事業場（施設）の候補をすべて探す（1社が複数施設を持つ場合あり）
+    function findMatchingDispSites(compName) {
+      const normComp = normalizeCompanyBase(compName);
+      if (!normComp) return [];
+      return safeGetArray(currentMasters.disposals).filter(d => {
+        const normSite = normalizeCompanyBase(d.compName || d.name);
+        if (!normSite) return false;
+        const len = Math.min(4, normComp.length, normSite.length);
+        return len >= 2 && normComp.slice(0, len) === normSite.slice(0, len);
+      });
+    }
+
+    function applyDispSiteFromCandidate(d) {
+      pushUndoState();
+      setFieldValue('f-disp-site-zip', d.zip);
+      setFieldValue('f-disp-site-addr', d.addr);
+      setFieldValue('f-disp-site-name', d.compName);
+      setFieldValue('f-disp-site-tel', d.tel);
+      try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
+      saveLayoutAndBg(false);
+      showToast(`🔎 運搬先の事業場に「${d.compName}」を反映しました`);
+    }
+
+    function openDispSiteCandidateModal(candidates) {
+      const list = document.getElementById('candidate-list');
+      list.innerHTML = '';
+      candidates.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-blue';
+        btn.style.cssText = 'display:block; width:100%; text-align:left; margin-bottom:8px; white-space:normal;';
+        btn.textContent = c.compName || c.name;
+        btn.onclick = function() {
+          applyDispSiteFromCandidate(c);
+          closeCandidateModal();
+        };
+        list.appendChild(btn);
+      });
+      document.getElementById('candidate-modal').style.display = 'flex';
+    }
+
+    function closeCandidateModal() {
+      document.getElementById('candidate-modal').style.display = 'none';
+    }
+
     function applyDispSite() {
       pushUndoState();
       const idx = document.getElementById('sel-disp-site').value;
@@ -2172,6 +2814,11 @@
           try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
           showToast(`🔎 施設名から処分受託者「${match.compName}」を自動入力しました`);
         }
+      } else {
+        setFieldValue('f-disp-site-zip', '');
+        setFieldValue('f-disp-site-addr', '');
+        setFieldValue('f-disp-site-name', '');
+        setFieldValue('f-disp-site-tel', '');
       }
       saveLayoutAndBg(false);
     }
@@ -2185,6 +2832,19 @@
         setFieldValue('f-disp-comp-addr', d.addr);
         setFieldValue('f-disp-comp-name', d.compName);
         setFieldValue('f-disp-comp-tel', d.tel);
+
+        // 会社名から運搬先の事業場（施設）を特定できれば自動で入力する（候補が複数あれば選択肢を出す）
+        const candidates = findMatchingDispSites(d.compName);
+        if (candidates.length === 1) {
+          applyDispSiteFromCandidate(candidates[0]);
+        } else if (candidates.length > 1) {
+          openDispSiteCandidateModal(candidates);
+        }
+      } else {
+        setFieldValue('f-disp-comp-zip', '');
+        setFieldValue('f-disp-comp-addr', '');
+        setFieldValue('f-disp-comp-name', '');
+        setFieldValue('f-disp-comp-tel', '');
       }
       saveLayoutAndBg(false);
     }
@@ -2490,11 +3150,18 @@
       applyLayoutArray(masterDefaultLayout);
     }
 
+    let masterModalDirty = false;
+
     function openMasterModal() {
+      masterModalDirty = false;
       document.getElementById('master-modal').style.display = 'flex';
       renderTab();
     }
     function closeMasterModal() {
+      if (masterModalDirty) {
+        const ok = confirm('⚠️ 「設定を保存」を押さずに閉じようとしています。\n\nここまでの変更内容が失われます。よろしいですか？\n\n（保存する場合は、キャンセルしてから「💾 設定を保存」を押してください）');
+        if (!ok) return;
+      }
       document.getElementById('master-modal').style.display = 'none';
     }
     function switchTab(tab) {
@@ -2504,9 +3171,27 @@
       renderTab();
     }
 
+    function toggleDisplayNameCol() {
+      showDisplayNameCol = !showDisplayNameCol;
+      const btn = document.getElementById('btn-toggle-displayname');
+      if (btn) btn.textContent = showDisplayNameCol ? '🔽 プルダウンの略称を隠す' : '🔽 プルダウンの略称を編集';
+      if (showDisplayNameCol) {
+        showToast('🔽 プルダウン選択時に出る名前です。会社名を入力すると自動で入ります');
+      }
+      renderTab();
+    }
+
+    const TABS_WITHOUT_DISPLAYNAME_TOGGLE = ['persons', 'depts', 'surnames'];
+
     function renderTab() {
       const container = document.getElementById('tab-container');
       const items = currentMasters[activeTab];
+
+      const toggleBtn = document.getElementById('btn-toggle-displayname');
+      if (toggleBtn) {
+        const relevant = !TABS_WITHOUT_DISPLAYNAME_TOGGLE.includes(activeTab);
+        toggleBtn.style.display = relevant ? '' : 'none';
+      }
 
       let html = `<table class="master-table"><thead><tr>`;
       if (activeTab === 'persons') {
@@ -2514,7 +3199,7 @@
         items.forEach((item, i) => {
           html += `<tr>
             <td><input class="col-wide" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)"></td>
-            <td><button class="btn btn-red" style="padding:2px 6px;" onclick="deleteMasterRow(${i})">🗑️</button></td>
+            <td><button class="btn btn-red" style="padding:2px 6px;" title="削除" onclick="deleteMasterRow(${i})">🗑️</button></td>
           </tr>`;
         });
       } else if (activeTab === 'depts') {
@@ -2522,21 +3207,21 @@
         items.forEach((item, i) => {
           html += `<tr>
             <td><input class="col-wide" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)"></td>
-            <td><button class="btn btn-red" style="padding:2px 6px;" onclick="deleteMasterRow(${i})">🗑️</button></td>
+            <td><button class="btn btn-red" style="padding:2px 6px;" title="削除" onclick="deleteMasterRow(${i})">🗑️</button></td>
           </tr>`;
         });
       } else if (activeTab === 'sites') {
-        html += `<th>プルダウン表示名</th><th>正式現場名(事業場名)</th><th>郵便番号</th><th>所在地</th><th>電話番号</th><th>操作</th></tr></thead><tbody>`;
+        html += `<th class="col-displayname">表示名</th><th>正式現場名(事業場名)</th><th>郵便番号</th><th>所在地</th><th>電話番号</th><th>操作</th></tr></thead><tbody>`;
         items.forEach((item, i) => {
           html += `<tr>
-            <td><input class="col-medium" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'name')">📋</button></td>
-            <td><input class="col-wide" type="text" value="${item.siteName || ''}" onchange="updateMasterItem(${i}, 'siteName', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'siteName')">📋</button></td>
-            <td><input class="col-narrow" type="text" value="${item.zip || ''}" onchange="updateMasterItem(${i}, 'zip', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'zip')">📋</button></td>
-            <td><input class="col-wide" type="text" value="${item.addr || ''}" onchange="updateMasterItem(${i}, 'addr', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'addr')">📋</button></td>
-            <td><input class="col-narrow" type="text" value="${item.tel || ''}" onchange="updateMasterItem(${i}, 'tel', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'tel')">📋</button></td>
+            <td class="col-displayname"><input class="col-medium" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)" onpaste="handleMasterNamePaste(event, ${i})"></td>
+            <td><input class="col-wide" type="text" value="${item.siteName || ''}" onchange="updateMasterItem(${i}, 'siteName', this.value)"></td>
+            <td><input class="col-narrow" type="text" value="${item.zip || ''}" onchange="updateMasterItem(${i}, 'zip', this.value)" onblur="handleMasterZipBlur(${i})"></td>
+            <td><input class="col-wide" type="text" value="${item.addr || ''}" onchange="updateMasterItem(${i}, 'addr', this.value)"></td>
+            <td><input class="col-narrow" type="text" value="${item.tel || ''}" onchange="updateMasterItem(${i}, 'tel', this.value)"></td>
             <td style="white-space:nowrap;">
-              <button class="btn btn-dark" style="padding:2px 6px;" onclick="copyMasterItem(${i})">📋全部</button>
-              <button class="btn btn-red" style="padding:2px 6px;" onclick="deleteMasterRow(${i})">🗑️</button>
+              <button class="btn btn-dark" style="padding:2px 6px;" title="コピー（表計算に貼り付けると自動で列分けされます）" onclick="copyMasterItem(${i})">📋</button>
+              <button class="btn btn-red" style="padding:2px 6px;" title="削除" onclick="deleteMasterRow(${i})">🗑️</button>
             </td>
           </tr>`;
         });
@@ -2545,46 +3230,130 @@
         items.forEach((item, i) => {
           html += `<tr>
             <td><input class="col-wide" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)"></td>
-            <td><button class="btn btn-red" style="padding:2px 6px;" onclick="deleteMasterRow(${i})">🗑️</button></td>
+            <td><button class="btn btn-red" style="padding:2px 6px;" title="削除" onclick="deleteMasterRow(${i})">🗑️</button></td>
           </tr>`;
         });
       } else if (activeTab === 'vehicles' || activeTab === 'vehicles2') {
-        html += `<th>表示名</th><th>車種</th><th>車両番号</th><th>操作</th></tr></thead><tbody>`;
+        html += `<th class="col-displayname">表示名</th><th>車種</th><th>車両番号</th><th>操作</th></tr></thead><tbody>`;
         items.forEach((item, i) => {
           html += `<tr>
-            <td><input class="col-wide" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)"></td>
+            <td class="col-displayname"><input class="col-wide" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)"></td>
             <td><input class="col-medium" type="text" value="${item.type || ''}" onchange="updateMasterItem(${i}, 'type', this.value)"></td>
             <td><input class="col-medium" type="text" value="${item.no || ''}" onchange="updateMasterItem(${i}, 'no', this.value)"></td>
-            <td><button class="btn btn-red" style="padding:2px 6px;" onclick="deleteMasterRow(${i})">🗑️</button></td>
+            <td><button class="btn btn-red" style="padding:2px 6px;" title="削除" onclick="deleteMasterRow(${i})">🗑️</button></td>
           </tr>`;
         });
       } else {
-        html += `<th>プルダウン表示名</th><th>会社名</th><th>郵便番号</th><th>住所</th><th>電話番号</th><th>操作</th></tr></thead><tbody>`;
+        const compHeaderLabel = (activeTab === 'disposals' || activeTab === 'tsSites') ? '会社名または施設名' : '会社名';
+        html += `<th class="col-displayname">表示名</th><th>${compHeaderLabel}</th><th>郵便番号</th><th>住所</th><th>電話番号</th><th>操作</th></tr></thead><tbody>`;
         items.forEach((item, i) => {
           html += `<tr>
-            <td><input class="col-medium" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'name')">📋</button></td>
-            <td><input class="col-wide" type="text" value="${item.compName || ''}" onchange="updateMasterItem(${i}, 'compName', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'compName')">📋</button></td>
-            <td><input class="col-narrow" type="text" value="${item.zip || ''}" onchange="updateMasterItem(${i}, 'zip', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'zip')">📋</button></td>
-            <td><input class="col-wide" type="text" value="${item.addr || ''}" onchange="updateMasterItem(${i}, 'addr', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'addr')">📋</button></td>
-            <td><input class="col-narrow" type="text" value="${item.tel || ''}" onchange="updateMasterItem(${i}, 'tel', this.value)"><button class="btn btn-dark" style="padding:1px 5px; font-size:10px;" onclick="copyMasterField(${i},'tel')">📋</button></td>
+            <td class="col-displayname"><input class="col-medium" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)" onpaste="handleMasterNamePaste(event, ${i})"></td>
+            <td><input class="col-wide" type="text" value="${item.compName || ''}" onchange="updateMasterItem(${i}, 'compName', this.value)"></td>
+            <td><input class="col-narrow" type="text" value="${item.zip || ''}" onchange="updateMasterItem(${i}, 'zip', this.value)" onblur="handleMasterZipBlur(${i})"></td>
+            <td><input class="col-wide" type="text" value="${item.addr || ''}" onchange="updateMasterItem(${i}, 'addr', this.value)"></td>
+            <td><input class="col-narrow" type="text" value="${item.tel || ''}" onchange="updateMasterItem(${i}, 'tel', this.value)"></td>
             <td style="white-space:nowrap;">
-              <button class="btn btn-dark" style="padding:2px 6px;" onclick="copyMasterItem(${i})">📋全部</button>
-              <button class="btn btn-red" style="padding:2px 6px;" onclick="deleteMasterRow(${i})">🗑️</button>
+              <button class="btn btn-dark" style="padding:2px 6px;" title="コピー（表計算に貼り付けると自動で列分けされます）" onclick="copyMasterItem(${i})">📋</button>
+              <button class="btn btn-red" style="padding:2px 6px;" title="削除" onclick="deleteMasterRow(${i})">🗑️</button>
             </td>
           </tr>`;
         });
       }
       html += `</tbody></table>`;
       container.innerHTML = html;
+      container.classList.toggle('hide-displayname-col', !showDisplayNameCol);
     }
 
-    function updateMasterItem(idx, key, val) { currentMasters[activeTab][idx][key] = val; }
-    function addMasterRow() {
-      if (activeTab === 'persons' || activeTab === 'depts' || activeTab === 'surnames') currentMasters[activeTab].push({ name: "新規" });
-      else if (activeTab === 'sites') currentMasters.sites.push({ name: "新規", siteName: "", zip: "", addr: "", tel: "" });
-      else if (activeTab === 'vehicles' || activeTab === 'vehicles2') currentMasters[activeTab].push({ name: "新規", type: "", no: "" });
-      else currentMasters[activeTab].push({ name: "新規", compName: "", zip: "", addr: "", tel: "" });
+    // 正式名称から、プルダウン表示用の短い名称を自動生成する（会社形態の略称化＋末尾のよくある施設名の省略）
+    function autoShortenCompanyName(compName) {
+      if (!compName) return '';
+      let s = compName.replace(/株式会社/g, '(株)').replace(/有限会社/g, '(有)').replace(/合同会社/g, '(合)');
+      const trailingSuffixes = ['木くず・がれき類破砕施設', '木くず･がれき類破砕施設', '破砕施設', '処分場', '事業所', '工場', '施設'];
+      for (const suf of trailingSuffixes) {
+        if (s.endsWith(suf)) {
+          s = s.slice(0, s.length - suf.length).replace(/[\s　]+$/, '');
+          break;
+        }
+      }
+      return s.trim();
+    }
+
+    async function handleMasterZipBlur(idx) {
+      const item = currentMasters[activeTab][idx];
+      if (!item || !('addr' in item) || (item.addr && item.addr.trim() !== '')) return;
+      const addr = await lookupZipAddress(item.zip);
+      if (addr) {
+        item.addr = addr;
+        masterModalDirty = true;
+        renderTab();
+        showToast('📮 郵便番号から住所を自動入力しました（続きをご入力ください）');
+      }
+    }
+
+    function updateMasterItem(idx, key, val) {
+      if (key === 'name' && val.indexOf('\t') !== -1) {
+        distributeMasterRowPaste(idx, val);
+        return;
+      }
+      currentMasters[activeTab][idx][key] = val;
+      masterModalDirty = true;
+      if (key === 'compName') {
+        const item = currentMasters[activeTab][idx];
+        if (!item.name || item.name.trim() === '') {
+          item.name = autoShortenCompanyName(val);
+          renderTab();
+        }
+      }
+      if ((key === 'type' || key === 'no') && (activeTab === 'vehicles' || activeTab === 'vehicles2')) {
+        const item = currentMasters[activeTab][idx];
+        if (!item.name || item.name.trim() === '') {
+          if (item.type && item.no) {
+            item.name = `${item.type} (${item.no})`;
+            renderTab();
+          }
+        }
+      }
+    }
+
+    function handleMasterNamePaste(e, idx) {
+      const clip = e.clipboardData || window.clipboardData;
+      const text = clip ? clip.getData('text') : '';
+      if (!text || text.indexOf('\t') === -1) return; // タブ区切りでなければ通常の貼り付けに任せる
+      e.preventDefault();
+      distributeMasterRowPaste(idx, text);
+    }
+
+    function distributeMasterRowPaste(idx, text) {
+      const item = currentMasters[activeTab][idx];
+      if (!item) return;
+      const parts = text.split('\t'); // [表示名, 会社名/現場名, 郵便番号, 住所, 電話番号]
+      item.name = parts[0] || item.name;
+      if ('siteName' in item) item.siteName = parts[1] || item.siteName;
+      else item.compName = parts[1] || item.compName;
+      if ('zip' in item) item.zip = parts[2] || item.zip;
+      if ('addr' in item) item.addr = parts[3] || item.addr;
+      if ('tel' in item) item.tel = parts[4] || item.tel;
+      masterModalDirty = true;
       renderTab();
+      showToast('📋 貼り付けた内容を全項目へ振り分けました');
+    }
+
+    function addMasterRow() {
+      if (activeTab === 'persons' || activeTab === 'depts' || activeTab === 'surnames') currentMasters[activeTab].push({ name: "" });
+      else if (activeTab === 'sites') currentMasters.sites.push({ name: "", siteName: "", zip: "", addr: "", tel: "" });
+      else if (activeTab === 'vehicles' || activeTab === 'vehicles2') currentMasters[activeTab].push({ name: "", type: "", no: "" });
+      else currentMasters[activeTab].push({ name: "", compName: "", zip: "", addr: "", tel: "" });
+      masterModalDirty = true;
+      renderTab();
+      setTimeout(() => {
+        const rows = document.querySelectorAll('#tab-container tbody tr');
+        const lastRow = rows[rows.length - 1];
+        if (!lastRow) return;
+        // 会社名（正式名称）欄があればそこへ、なければ最初の入力欄へフォーカスする
+        const target = lastRow.querySelector('.col-wide') || lastRow.querySelector('input');
+        if (target) target.focus();
+      }, 0);
     }
     function doCopyText(text) {
       if (!text) return;
@@ -2600,28 +3369,18 @@
         document.body.removeChild(ta);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => showToast('📋 コピーしました')).catch(fallbackCopy);
+        navigator.clipboard.writeText(text).then(() => showToast('📋 コピーしました（表計算に貼り付けると自動で列分けされます）')).catch(fallbackCopy);
       } else {
         fallbackCopy();
       }
     }
 
-    function copyMasterField(idx, field) {
-      const item = currentMasters[activeTab][idx];
-      if (!item) return;
-      doCopyText(item[field] || '');
-    }
-
     function copyMasterItem(idx) {
       const item = currentMasters[activeTab][idx];
       if (!item) return;
-      const lines = [];
-      if (item.compName || item.siteName) lines.push(item.compName || item.siteName);
-      else if (item.name) lines.push(item.name);
-      if (item.zip) lines.push(`〒${item.zip}`);
-      if (item.addr) lines.push(item.addr);
-      if (item.tel) lines.push(`TEL: ${item.tel}`);
-      doCopyText(lines.join('\n'));
+      const compOrSite = item.compName || item.siteName || '';
+      const text = [item.name || '', compOrSite, item.zip || '', item.addr || '', item.tel || ''].join('\t');
+      doCopyText(text);
     }
 
     function deleteMasterRow(idx) {
@@ -2629,7 +3388,21 @@
       const label = item ? (item.name || item.compName || 'この項目') : 'この項目';
       if (!confirm(`「${label}」を削除します。この操作は元に戻せません。よろしいですか？`)) return;
       currentMasters[activeTab].splice(idx, 1);
+      masterModalDirty = true;
       renderTab();
+    }
+
+    function exportMasterData() {
+      const text = JSON.stringify(currentMasters, null, 2);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          alert('✅ マスターデータ全体（排出者・事業場・運搬業者・車両・処分先など全カテゴリ）をクリップボードにコピーしました。\n\nそのままClaudeに貼り付けてください。');
+        }).catch(() => {
+          window.prompt('コピーに失敗しました。以下を手動で全選択してコピーしてください（Ctrl+A → Ctrl+C）：', text);
+        });
+      } else {
+        window.prompt('この内容を全部（Ctrl+Aで全選択してから）コピーしてClaudeに貼り付けてください：', text);
+      }
     }
 
     function saveMasterData() {
@@ -2642,14 +3415,15 @@
             const bIsTsutsuga = (b.name || '').includes('筒賀建設');
             if (aIsTsutsuga && !bIsTsutsuga) return -1;
             if (bIsTsutsuga && !aIsTsutsuga) return 1;
-            return cleanNameForSort(a.name).localeCompare(cleanNameForSort(b.name), 'ja');
+            return japaneseNameCompare(a.name, b.name);
           });
         } else {
-          currentMasters[key].sort((a, b) => cleanNameForSort(a.name).localeCompare(cleanNameForSort(b.name), 'ja'));
+          currentMasters[key].sort((a, b) => japaneseNameCompare(a.name, b.name));
         }
       });
       localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
       initMasterSelects();
+      masterModalDirty = false;
       closeMasterModal();
       showToast('✅ マスターデータを保存し整列しました！');
     }
