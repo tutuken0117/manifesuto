@@ -502,6 +502,8 @@
     .slash-box svg line { stroke: #000000 !important; stroke-width: 1.5px !important; }
   }
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
 <body class="mode-input">
 
@@ -896,7 +898,14 @@
       ],
       "transporters": [
             {
-                  "name": "あさやま工業(株)",
+                  "name": "筒賀建設(株)［自社運搬］",
+                  "compName": "筒賀建設株式会社",
+                  "zip": "731-3702",
+                  "addr": "広島県山県郡安芸太田町大字中筒賀540-2",
+                  "tel": "0826-28-1877"
+            },
+            {
+                  "name": "あさやま工業株式会社",
                   "compName": "あさやま工業株式会社",
                   "zip": "731-3502",
                   "addr": "広島県山県郡安芸太田町大字津浪29番地",
@@ -910,7 +919,7 @@
                   "tel": "0826-28-1880"
             },
             {
-                  "name": "(株)河本組",
+                  "name": "株式会社河本組",
                   "compName": "株式会社河本組",
                   "zip": "731-3612",
                   "addr": "広島県山県郡安芸太田町大字遊谷665番地1",
@@ -938,7 +947,7 @@
                   "tel": "0826-22-2122"
             },
             {
-                  "name": "西部環境(有)",
+                  "name": "西部環境有限会社",
                   "compName": "西部環境有限会社",
                   "zip": "731-3812",
                   "addr": "広島県山県郡安芸太田町大字寺領1512番地",
@@ -957,13 +966,6 @@
                   "zip": "731-3621",
                   "addr": "広島県山県郡安芸太田町下筒賀1152-1",
                   "tel": "0826-22-0335"
-            },
-            {
-                  "name": "筒賀建設(株)［自社運搬］",
-                  "compName": "筒賀建設株式会社",
-                  "zip": "731-3702",
-                  "addr": "広島県山県郡安芸太田町大字中筒賀540-2",
-                  "tel": "0826-28-1877"
             },
             {
                   "name": "(株)Ｒeady Lyn",
@@ -1083,7 +1085,7 @@
                   "tel": "082-927-2000"
             },
             {
-                  "name": "(有)西部パブリック",
+                  "name": "(有)西部ﾊﾟﾌﾞﾘｯｸ下筒賀",
                   "compName": "(有)西部パブリック　下筒賀施設",
                   "zip": "731-3663",
                   "addr": "広島県山県郡安芸太田町大字下筒賀1113番地",
@@ -1171,14 +1173,14 @@
       ],
       "tsSites": [
             {
-                  "name": "(有)西部ﾊﾟﾌﾞﾘｯｸ 下筒賀",
+                  "name": "(有)西部ﾊﾟﾌﾞﾘｯｸ 下筒賀施設",
                   "compName": "(有)西部パブリック 下筒賀施設",
                   "zip": "731-3663",
                   "addr": "広島県山県郡安芸太田町大字下筒賀1113番地",
                   "tel": "0826-28-2831"
             },
             {
-                  "name": "西部環境有限会社",
+                  "name": "西部環境(有)",
                   "compName": "西部環境有限会社",
                   "zip": "731-3821",
                   "addr": "広島県山県郡安芸太田町大字土居317-1、318-1",
@@ -1189,7 +1191,7 @@
 
     // マスターデータの「初期値バージョン」。Claudeがマスターの初期値を更新するたびにこの数字を1つ上げる。
     // ブラウザ側は、保存されているバージョンより新しければ「新しく追加された初期値だけ」を自動で取り込む
-    const MASTER_DATA_VERSION = 3;
+    const MASTER_DATA_VERSION = 4;
 
     let activeTab = 'emitters';
     let showDisplayNameCol = false;
@@ -1358,6 +1360,78 @@
       }
     })();
 
+    // ===== Firebase：マスターデータを端末間で共有するための設定 =====
+    // 別の端末で編集・追加したマスターデータを、開いた時に自動で取り込み、
+    // 保存した時に自動でアップロードする（常時リアルタイム同期ではなく、開いた時／保存した時だけ通信する方式）
+    const firebaseConfig = {
+      apiKey: "AIzaSyDMXJ-8_Lp4d0yS4vFGplO7MYcExh94TDs",
+      authDomain: "tsutsuga-manifest.firebaseapp.com",
+      projectId: "tsutsuga-manifest",
+      storageBucket: "tsutsuga-manifest.firebasestorage.app",
+      messagingSenderId: "1078651478136",
+      appId: "1:1078651478136:web:1d94009568460b6a6ccd8d"
+    };
+
+    let firestoreDb = null;
+    try {
+      if (typeof firebase !== 'undefined') {
+        firebase.initializeApp(firebaseConfig);
+        firestoreDb = firebase.firestore();
+      }
+    } catch (e) {
+      console.error('Firebase初期化に失敗しました（オフラインなど）:', e);
+      firestoreDb = null;
+    }
+
+    // クラウド（Firestore）からマスターデータを取得し、手元のデータと入れ替える
+    async function pullMasterFromCloud() {
+      if (!firestoreDb) return false;
+      try {
+        const doc = await firestoreDb.collection('manifestMasters').doc('shared').get();
+        if (doc.exists && doc.data() && doc.data().masters) {
+          currentMasters = doc.data().masters;
+          localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
+          return true;
+        }
+        return false;
+      } catch (e) {
+        console.error('Firestoreからの取得に失敗しました（オフラインの可能性）:', e);
+        return false;
+      }
+    }
+
+    // 今のマスターデータをクラウド（Firestore）にアップロードする
+    async function pushMasterToCloud() {
+      if (!firestoreDb) return false;
+      try {
+        await firestoreDb.collection('manifestMasters').doc('shared').set({
+          masters: currentMasters,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        return true;
+      } catch (e) {
+        console.error('Firestoreへの保存に失敗しました（オフラインの可能性）:', e);
+        return false;
+      }
+    }
+
+    // ページを開いた時に一度だけ、クラウドの最新マスターデータを取り込む
+    async function initCloudMasterSync() {
+      if (!firestoreDb) return;
+      const pulled = await pullMasterFromCloud();
+      if (pulled) {
+        // クラウドの内容に、コード側で新しく追加された初期値も念のため合わせて取り込む
+        mergeNewDefaultsIntoMasters();
+        localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
+        try { initMasterSelects(); } catch (e) { console.error(e); }
+        try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
+        pushMasterToCloud();
+      } else {
+        // クラウドにまだ何もない場合は、今の内容を初期データとしてアップロードしておく
+        pushMasterToCloud();
+      }
+    }
+
     // 移行処理：担当者・運転手の並び順を正しい50音順に修正する（既存の保存データにも適用）
     (function fixPersonSortOrder() {
       let changed = false;
@@ -1386,6 +1460,7 @@
       try { sanitizeWasteTypeExclusivity(); } catch(e) { console.error(e); }
       try { adjustPanelSpacer(); } catch(e) { console.error(e); }
       window.addEventListener('resize', adjustPanelSpacer);
+      initCloudMasterSync();
 
       // 個別要素のonfocus/onclickに加え、委譲リスナーでも確実に書式パネルを同期する
       const pageEl = document.getElementById('manifest-page');
@@ -1605,6 +1680,7 @@
       localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
       initMasterSelects();
       try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
+      pushMasterToCloud();
       showToast(`💾「${val}」をマスターに保存しました`);
     }
 
@@ -1646,6 +1722,7 @@
         localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
         initMasterSelects();
         try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
+        pushMasterToCloud();
         showToast(`💾「${nameVal}」のマスター情報を更新しました`);
       } else {
         const ok = confirm(`「${nameVal}」はマスターに登録されていません。\n\nこの内容をマスターに保存して、次回から選べるようにしますか？`);
@@ -1658,6 +1735,7 @@
         localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
         initMasterSelects();
         try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
+        pushMasterToCloud();
         showToast(`💾「${nameVal}」をマスターに保存しました`);
       }
     }
@@ -1689,6 +1767,7 @@
         localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
         initMasterSelects();
         try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
+        pushMasterToCloud();
         showToast(`💾 車両「${no}」のマスター情報を更新しました`);
         return;
       }
@@ -1702,6 +1781,7 @@
       localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
       initMasterSelects();
       try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
+      pushMasterToCloud();
       showToast(`💾「${label}」をマスターに保存しました`);
     }
 
@@ -3498,6 +3578,7 @@
       initMasterSelects();
       masterModalDirty = false;
       closeMasterModal();
+      pushMasterToCloud();
       showToast('✅ マスターデータを保存し整列しました！');
     }
   </script>
