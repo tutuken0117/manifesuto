@@ -309,6 +309,11 @@
     resize: none;
     user-select: text;
   }
+  .item-box textarea.multiline-field {
+    overflow: hidden;
+    white-space: pre;
+    line-height: 1.05;
+  }
   .item-box input:focus, .item-box textarea:focus {
     background: #ffffff;
     border-color: #1d4ed8;
@@ -449,9 +454,11 @@
   .master-table th, .master-table td { border: 1px solid #d1d5db; padding: 6px; font-size: 12px; text-align: left; }
   .master-table th { background: #f3f4f6; font-weight: bold; white-space: nowrap; position: sticky; top: 0; z-index: 5; }
   .master-table input { box-sizing: border-box; padding: 4px 6px; border: 1px solid #ccc; border-radius: 3px; font-size: 12px; }
+  .master-table textarea.master-multiline { box-sizing: border-box; padding: 4px 6px; border: 1px solid #ccc; border-radius: 3px; font-size: 12px; font-family: inherit; line-height: 1.3; resize: none; overflow: hidden; white-space: pre; vertical-align: middle; }
   .master-table input.col-narrow { width: 100px; }
   .master-table input.col-medium { width: 150px; }
   .master-table input.col-wide { width: 320px; }
+  .master-table textarea.col-wide { width: 320px; }
 
   /* 印刷専用設定（2ページ目を完全物理遮断） */
   @media print {
@@ -830,7 +837,7 @@
     }
 
     // 左1mm・上8mmへシフト済みの基本配置データ (全103要素)
-    const masterDefaultLayout = [{"type": "input", "x": 29.11, "y": 10.34, "w": 12.8, "h": 5.4, "id": "f-issue-year", "val": "2026", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 43.78, "y": 10.61, "w": 5.56, "h": 5.16, "id": "f-issue-month", "val": "7", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 51.35, "y": 10.61, "w": 5.3, "h": 5.42, "id": "f-issue-day", "val": "29", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 123.15, "y": 11.07, "w": 15.87, "h": 5.29, "id": "f-issue-dept", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 160.54, "y": 11.13, "w": 32.27, "h": 5.29, "id": "f-issue-person", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 44.92, "y": 24.5, "w": 22.75, "h": 4.1, "id": "f-emitter-zip", "val": "731-3702", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 41.24, "y": 28.44, "w": 66.12, "h": 3.97, "id": "f-emitter-addr", "val": "広島県山県郡安芸太田町大字中筒賀540-2", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 49.97, "y": 32.62, "w": 57.39, "h": 4.5, "id": "f-emitter-name", "val": "筒賀建設株式会社", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 49.97, "y": 37.32, "w": 29.36, "h": 3.97, "id": "f-emitter-tel", "val": "0826-28-1877", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 124.35, "y": 24.76, "w": 22.48, "h": 3.97, "id": "f-site-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 119.88, "y": 28.71, "w": 62.68, "h": 3.97, "id": "f-site-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 119.89, "y": 32.62, "w": 62.42, "h": 4.23, "id": "f-site-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 122.26, "y": 37.06, "w": 28.56, "h": 4.5, "id": "f-site-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "circle", "x": 76.37, "y": 46.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "t", "groupName": "unit", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 81.07, "y": 46.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "Kg", "groupName": "unit", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 86.67, "y": 46.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "㎥", "groupName": "unit", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 92.04, "y": 46.32, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "ℓ", "groupName": "unit", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 28.34, "y": 54.57, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "01", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 53.77, "w": 10.8, "h": 4.4, "id": "f-qty-01", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 58.8, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "02", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 58.01, "w": 10.8, "h": 4.4, "id": "f-qty-02", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 63.04, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "03", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 62.24, "w": 10.8, "h": 4.4, "id": "f-qty-03", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 67.27, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "04", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 66.48, "w": 10.8, "h": 4.4, "id": "f-qty-04", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 71.51, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "05", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 70.71, "w": 10.8, "h": 4.4, "id": "f-qty-05", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 75.74, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "06", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 74.95, "w": 10.8, "h": 4.4, "id": "f-qty-06", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 71.47, "y": 54.57, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "07", "groupName": "waste_type", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "input", "x": 99.87, "y": 54.3, "w": 10.8, "h": 4.4, "id": "f-qty-07", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 71.47, "y": 58.8, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "08", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 99.87, "y": 58.27, "w": 10.8, "h": 4.4, "id": "f-qty-08", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 54.57, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "11", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.35, "y": 54.29, "w": 10.8, "h": 4.4, "id": "f-qty-11", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 58.8, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "12", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.35, "y": 58.53, "w": 10.8, "h": 4.4, "id": "f-qty-12", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 63.03, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "13", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.36, "y": 62.78, "w": 10.8, "h": 4.4, "id": "f-qty-13", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 67.27, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "14", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.35, "y": 67.01, "w": 10.8, "h": 4.4, "id": "f-qty-14", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 71.5, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "15", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.36, "y": 71.24, "w": 10.8, "h": 4.4, "id": "f-qty-15", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 75.74, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "16", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.36, "y": 75.47, "w": 10.8, "h": 4.4, "id": "f-qty-16", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 153, "y": 54.57, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "17", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 181.4, "y": 54.56, "w": 10.84, "h": 4.23, "id": "f-qty-17", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 153, "y": 59.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "18", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 181.4, "y": 60.91, "w": 10.84, "h": 4.5, "id": "f-qty-18", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 193.72, "y": 54.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "21", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 219.58, "y": 54.56, "w": 11.37, "h": 4.23, "id": "f-qty-21", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 181.28, "y": 71.18, "w": 11.11, "h": 8.73, "id": "f-total-qty", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "circle", "x": 234.37, "y": 50.6, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "shape", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 234.37, "y": 54.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "shape", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 234.37, "y": 59.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "shape", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 50.59, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 54.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 59.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 63.3, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "4", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 86.76, "y": 92.34, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "final_select", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 137.47, "y": 92.61, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "final_select", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 208.83, "y": 122.15, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "inter_method", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 218.34, "y": 122.16, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "inter_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 227.84, "y": 122.42, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "inter_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 209.1, "y": 126.37, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "final_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 221.77, "y": 126.37, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "final_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 234.45, "y": 126.63, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "final_method", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "input", "x": 39.36, "y": 105.63, "w": 23.81, "h": 4.1, "id": "f-trans1-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 36.48, "y": 109.83, "w": 70.08, "h": 3.44, "id": "f-trans1-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 45.47, "y": 113.56, "w": 60.83, "h": 4.5, "id": "f-trans1-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 45.47, "y": 117.94, "w": 25.12, "h": 3.44, "id": "f-trans1-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 47.68, "y": 125.86, "w": 33.06, "h": 4.23, "id": "f-trans1-veh-no", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 80.76, "y": 125.86, "w": 25.65, "h": 4.5, "id": "f-trans1-veh-type", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "circle", "x": 28.25, "y": 126.16, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "ts1", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 37.9, "y": 126.16, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "ts1", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 121.67, "y": 105.63, "w": 21.96, "h": 3.84, "id": "f-trans2-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 117.49, "y": 109.31, "w": 70.35, "h": 4.5, "id": "f-trans2-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 127.01, "y": 113.81, "w": 60.83, "h": 4.5, "id": "f-trans2-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 127.52, "y": 118.2, "w": 23.54, "h": 3.57, "id": "f-trans2-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 129.22, "y": 126.13, "w": 33.06, "h": 4.5, "id": "f-trans2-veh-no", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 162.29, "y": 126.13, "w": 25.39, "h": 4.5, "id": "f-trans2-veh-type", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "circle", "x": 109.78, "y": 126.42, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "ts2", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 119.43, "y": 126.42, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "ts2", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 205.19, "y": 105.9, "w": 19.57, "h": 3.97, "id": "f-disp-site-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 201.52, "y": 109.83, "w": 65.06, "h": 3.7, "id": "f-disp-site-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 201.79, "y": 113.55, "w": 65.06, "h": 4.76, "id": "f-disp-site-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 203.89, "y": 118.31, "w": 27.5, "h": 3.44, "id": "f-disp-site-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 39.63, "y": 138.19, "w": 19.05, "h": 4.37, "id": "f-disp-comp-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 36.21, "y": 142.66, "w": 70.35, "h": 3.97, "id": "f-disp-comp-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 46.53, "y": 146.6, "w": 59.77, "h": 4.5, "id": "f-disp-comp-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 46.79, "y": 151.43, "w": 23.54, "h": 3.97, "id": "f-disp-comp-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 123.8, "y": 139.26, "w": 23.02, "h": 4.1, "id": "f-ts-site-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 119.88, "y": 143.47, "w": 67.7, "h": 4.23, "id": "f-ts-site-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 124.09, "y": 147.67, "w": 23.01, "h": 3.44, "id": "f-ts-site-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "circle", "x": 127.46, "y": 151.59, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "yu", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 137.36, "y": 151.59, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "yu", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 27.55, "y": 168.29, "w": 30.41, "h": 3.7, "id": "f-sign-trans1-comp", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 27.56, "y": 172.08, "w": 30.68, "h": 5.02, "id": "f-sign-trans1-person", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "slash", "x": 109.01, "y": 98.88, "w": 78.81, "h": 31.21, "id": "slash-trans2", "val": "", "hasSlash": true, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "slash", "x": 107.71, "y": 82.19, "w": 158.42, "h": 5.55, "id": "slash-inter", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "slash", "x": 109.27, "y": 132.7, "w": 78.28, "h": 22.74, "id": "slash-ts-site", "val": "", "hasSlash": true, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": null}];
+    const masterDefaultLayout = [{"type": "input", "x": 29.11, "y": 10.34, "w": 12.8, "h": 5.4, "id": "f-issue-year", "val": "2026", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 43.78, "y": 10.61, "w": 5.56, "h": 5.16, "id": "f-issue-month", "val": "7", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 51.35, "y": 10.61, "w": 5.3, "h": 5.42, "id": "f-issue-day", "val": "29", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 123.15, "y": 11.07, "w": 15.87, "h": 5.29, "id": "f-issue-dept", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 160.54, "y": 11.13, "w": 32.27, "h": 5.29, "id": "f-issue-person", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 44.92, "y": 24.5, "w": 22.75, "h": 4.1, "id": "f-emitter-zip", "val": "731-3702", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 41.24, "y": 28.44, "w": 66.12, "h": 3.97, "id": "f-emitter-addr", "val": "広島県山県郡安芸太田町大字中筒賀540-2", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 49.97, "y": 32.62, "w": 57.39, "h": 4.5, "id": "f-emitter-name", "val": "筒賀建設株式会社", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 49.97, "y": 37.32, "w": 29.36, "h": 3.97, "id": "f-emitter-tel", "val": "0826-28-1877", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 124.35, "y": 24.76, "w": 22.48, "h": 3.97, "id": "f-site-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 119.88, "y": 28.71, "w": 62.68, "h": 3.97, "id": "f-site-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 119.89, "y": 32.2, "w": 62.42, "h": 5.1, "id": "f-site-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 122.26, "y": 37.06, "w": 28.56, "h": 4.5, "id": "f-site-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "circle", "x": 76.37, "y": 46.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "t", "groupName": "unit", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 81.07, "y": 46.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "Kg", "groupName": "unit", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 86.67, "y": 46.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "㎥", "groupName": "unit", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 92.04, "y": 46.32, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "ℓ", "groupName": "unit", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 28.34, "y": 54.57, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "01", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 53.77, "w": 10.8, "h": 4.4, "id": "f-qty-01", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 58.8, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "02", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 58.01, "w": 10.8, "h": 4.4, "id": "f-qty-02", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 63.04, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "03", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 62.24, "w": 10.8, "h": 4.4, "id": "f-qty-03", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 67.27, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "04", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 66.48, "w": 10.8, "h": 4.4, "id": "f-qty-04", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 71.51, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "05", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 70.71, "w": 10.8, "h": 4.4, "id": "f-qty-05", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 28.34, "y": 75.74, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "06", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 58.88, "y": 74.95, "w": 10.8, "h": 4.4, "id": "f-qty-06", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 71.47, "y": 54.57, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "07", "groupName": "waste_type", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "input", "x": 99.87, "y": 54.3, "w": 10.8, "h": 4.4, "id": "f-qty-07", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 71.47, "y": 58.8, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "08", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 99.87, "y": 58.27, "w": 10.8, "h": 4.4, "id": "f-qty-08", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 54.57, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "11", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.35, "y": 54.29, "w": 10.8, "h": 4.4, "id": "f-qty-11", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 58.8, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "12", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.35, "y": 58.53, "w": 10.8, "h": 4.4, "id": "f-qty-12", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 63.03, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "13", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.36, "y": 62.78, "w": 10.8, "h": 4.4, "id": "f-qty-13", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 67.27, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "14", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.35, "y": 67.01, "w": 10.8, "h": 4.4, "id": "f-qty-14", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 71.5, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "15", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.36, "y": 71.24, "w": 10.8, "h": 4.4, "id": "f-qty-15", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 112.23, "y": 75.74, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "16", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 140.36, "y": 75.47, "w": 10.8, "h": 4.4, "id": "f-qty-16", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 153, "y": 54.57, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "17", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 181.4, "y": 54.56, "w": 10.84, "h": 4.23, "id": "f-qty-17", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 153, "y": 59.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "18", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 181.4, "y": 60.91, "w": 10.84, "h": 4.5, "id": "f-qty-18", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "circle", "x": 193.72, "y": 54.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "21", "groupName": "waste_type", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 219.58, "y": 54.56, "w": 11.37, "h": 4.23, "id": "f-qty-21", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": true, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": "center"}}, {"type": "input", "x": 181.28, "y": 71.18, "w": 11.11, "h": 8.73, "id": "f-total-qty", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "circle", "x": 234.37, "y": 50.6, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "shape", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 234.37, "y": 54.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "shape", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 234.37, "y": 59.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "shape", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 50.59, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 54.83, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 59.06, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 252.15, "y": 63.3, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "4", "groupName": "style", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 86.76, "y": 92.34, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "final_select", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 137.47, "y": 92.61, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "final_select", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 208.83, "y": 122.15, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "inter_method", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 218.34, "y": 122.16, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "inter_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 227.84, "y": 122.42, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "inter_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 209.1, "y": 126.37, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "final_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 221.77, "y": 126.37, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "final_method", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 234.45, "y": 126.63, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "3", "groupName": "final_method", "isActive": true, "isQty": false, "fontStyle": null}, {"type": "input", "x": 39.36, "y": 105.63, "w": 23.81, "h": 4.1, "id": "f-trans1-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 36.48, "y": 109.83, "w": 70.08, "h": 3.44, "id": "f-trans1-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 45.47, "y": 113.56, "w": 60.83, "h": 4.5, "id": "f-trans1-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 45.47, "y": 117.94, "w": 25.12, "h": 3.44, "id": "f-trans1-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 47.68, "y": 125.86, "w": 33.06, "h": 4.23, "id": "f-trans1-veh-no", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 80.76, "y": 125.86, "w": 25.65, "h": 4.5, "id": "f-trans1-veh-type", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "circle", "x": 28.25, "y": 126.16, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "ts1", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 37.9, "y": 126.16, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "ts1", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 121.67, "y": 105.63, "w": 21.96, "h": 3.84, "id": "f-trans2-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 117.49, "y": 109.31, "w": 70.35, "h": 4.5, "id": "f-trans2-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 127.01, "y": 113.81, "w": 60.83, "h": 4.5, "id": "f-trans2-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 127.52, "y": 118.2, "w": 23.54, "h": 3.57, "id": "f-trans2-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 129.22, "y": 126.13, "w": 33.06, "h": 4.5, "id": "f-trans2-veh-no", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 162.29, "y": 126.13, "w": 25.39, "h": 4.5, "id": "f-trans2-veh-type", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "circle", "x": 109.78, "y": 126.42, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "ts2", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 119.43, "y": 126.42, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "ts2", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 205.19, "y": 105.9, "w": 19.57, "h": 3.97, "id": "f-disp-site-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 201.52, "y": 109.83, "w": 65.06, "h": 3.7, "id": "f-disp-site-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 201.79, "y": 113.55, "w": 65.06, "h": 4.76, "id": "f-disp-site-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 203.89, "y": 118.31, "w": 27.5, "h": 3.44, "id": "f-disp-site-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 39.63, "y": 138.19, "w": 19.05, "h": 4.37, "id": "f-disp-comp-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 36.21, "y": 142.66, "w": 70.35, "h": 3.97, "id": "f-disp-comp-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 46.53, "y": 146.6, "w": 59.77, "h": 4.5, "id": "f-disp-comp-name", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 46.79, "y": 151.43, "w": 23.54, "h": 3.97, "id": "f-disp-comp-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 123.8, "y": 139.26, "w": 23.02, "h": 4.1, "id": "f-ts-site-zip", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 119.88, "y": 143.47, "w": 67.7, "h": 4.23, "id": "f-ts-site-addr", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "input", "x": 124.09, "y": 147.67, "w": 23.01, "h": 3.44, "id": "f-ts-site-tel", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "", "size": "9pt", "weight": "", "align": ""}}, {"type": "circle", "x": 127.46, "y": 151.59, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "1", "groupName": "yu", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "circle", "x": 137.36, "y": 151.59, "w": 3.6, "h": 3.6, "id": "", "val": "", "hasSlash": false, "text": "2", "groupName": "yu", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "input", "x": 27.55, "y": 168.29, "w": 30.41, "h": 3.7, "id": "f-sign-trans1-comp", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "input", "x": 27.56, "y": 172.08, "w": 30.68, "h": 5.02, "id": "f-sign-trans1-person", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": {"family": "\"MS 明朝\", serif", "size": "9pt", "weight": "normal", "align": "center"}}, {"type": "slash", "x": 109.01, "y": 98.88, "w": 78.81, "h": 31.21, "id": "slash-trans2", "val": "", "hasSlash": true, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "slash", "x": 107.71, "y": 82.19, "w": 158.42, "h": 5.55, "id": "slash-inter", "val": "", "hasSlash": false, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": null}, {"type": "slash", "x": 109.27, "y": 132.7, "w": 78.28, "h": 22.74, "id": "slash-ts-site", "val": "", "hasSlash": true, "text": "", "groupName": "", "isActive": false, "isQty": false, "fontStyle": null}];
 
     const defaultMasters = {
       "emitters": [
@@ -1218,7 +1225,9 @@
       const newKnownDefaultKeys = {};
 
       Object.keys(MASTER_CATEGORIES).forEach(key => {
-        const matchKeyFn = MASTER_CATEGORIES[key];
+        const rawKeyFn = MASTER_CATEGORIES[key];
+        // 改行の位置だけ変えた項目を「別の項目」と誤判定しないよう、改行を除いて比較する
+        const matchKeyFn = it => { const k = rawKeyFn(it); return k ? String(k).replace(/[\r\n]+/g, '') : k; };
         if (!Array.isArray(currentMasters[key])) currentMasters[key] = [];
         if (!Array.isArray(defaultMasters[key])) return;
 
@@ -1747,17 +1756,46 @@
       'f-disp-comp-name': 10
     };
 
+    // 任意の位置でEnter改行して2行表示できる欄（事業場の名称）
+    const MULTILINE_FIELD_IDS = ['f-site-name'];
+    const MULTILINE_MAX_LINES = 2;
+    const MULTILINE_LINE_HEIGHT = 1.05;
+    function isMultilineField(id) {
+      return MULTILINE_FIELD_IDS.includes(id || '');
+    }
+    // 改行の有無だけが違う名称を同じものとして扱うための比較用
+    function normalizeLineBreaks(s) {
+      return (s || '').replace(/[\r\n]+/g, '');
+    }
+    // 3行以上になった場合は、最初の改行だけ残して2行にまとめる
+    function limitToMaxLines(text) {
+      const lines = (text || '').replace(/\r/g, '').split('\n');
+      if (lines.length <= MULTILINE_MAX_LINES) return lines.join('\n');
+      return lines[0] + '\n' + lines.slice(1).join('');
+    }
+    // 2行表示の欄を、枠の上下中央に配置する
+    function centerMultilineText(el, sizePt) {
+      const lines = Math.max(1, (el.value || '').split('\n').length);
+      const lineHpx = sizePt * 96 / 72 * MULTILINE_LINE_HEIGHT;
+      const free = el.clientHeight - lines * lineHpx;
+      el.style.padding = Math.max(0, free / 2) + 'px 2px 0 2px';
+    }
+
     function autoFitFont(input) {
       if (!isAutoFitField(input.id)) return;
+      const multi = input.tagName === 'TEXTAREA' && isMultilineField(input.id);
       const baseSize = AUTO_FIT_BASE_SIZE_OVERRIDE[input.id] || 9;
       let size = baseSize;
       input.style.fontSize = size + 'pt';
+      if (multi) input.style.padding = '0 2px';
+      const overflows = () => input.scrollWidth > input.clientWidth + 1 || (multi && input.scrollHeight > input.clientHeight + 1);
       let guard = 0;
-      while (input.scrollWidth > input.clientWidth + 1 && size > 5.5 && guard < 20) {
+      while (overflows() && size > 5.5 && guard < 20) {
         size -= 0.5;
         input.style.fontSize = size + 'pt';
         guard++;
       }
+      if (multi) centerMultilineText(input, size);
     }
 
     // 名称欄からマスター未登録の入力を検知した際、マスターへの追加保存を確認するための設定
@@ -1816,11 +1854,13 @@
       if (!nameVal) return;
 
       const list = safeGetArray(currentMasters[masterInfo.key]);
-      const existing = list.find(it => (it[masterInfo.nameField] || it.name || '') === nameVal);
+      const existing = list.find(it => normalizeLineBreaks(it[masterInfo.nameField] || it.name || '') === normalizeLineBreaks(nameVal));
       const curZip = getFieldValue(zipId), curAddr = getFieldValue(addrId), curTel = getFieldValue(telId);
 
       if (existing) {
         const diffs = [];
+        const lineBreakChanged = (existing[masterInfo.nameField] || '') !== nameVal;
+        if (lineBreakChanged) diffs.push('改行の位置');
         if ((existing.zip || '') !== (curZip || '')) diffs.push('郵便番号');
         if ((existing.addr || '') !== (curAddr || '')) diffs.push('住所');
         if ((existing.tel || '') !== (curTel || '')) diffs.push('電話番号');
@@ -1828,6 +1868,7 @@
         const ok = confirm(`⚠️ マスターデータの更新確認\n\n「${nameVal}」は既にマスターに登録されていますが、${diffs.join('・')}の内容が異なります。\n\nここで「OK」を押すと、マスターに保存されている情報が今の内容に書き換わります。今後この項目をプルダウンで選ぶと、この新しい内容が使われます。\n\n本当に更新してよろしいですか？`);
         if (!ok) return;
         existing.zip = curZip; existing.addr = curAddr; existing.tel = curTel;
+        if (lineBreakChanged) existing[masterInfo.nameField] = nameVal;
         localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
         initMasterSelects();
         try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
@@ -1914,10 +1955,25 @@
       PASTE_FIELD_GROUPS[gk].forEach(fid => { FIELD_ID_TO_GROUP_KEY[fid] = gk; });
     });
 
+    // 改行を含む項目は表計算ソフトの形式（"..."で囲む）でコピーし、貼り付け時に元へ戻す
+    function tsvQuote(v) {
+      v = v == null ? '' : String(v);
+      return /[\n"]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+    }
+    function tsvUnquote(v) {
+      v = v == null ? '' : String(v).replace(/\r/g, '');
+      const t = v.replace(/^\n+|\n+$/g, '');
+      if (t.length >= 2 && t[0] === '"' && t[t.length - 1] === '"') return t.slice(1, -1).replace(/""/g, '"');
+      return t;
+    }
+    function escapeHtmlText(s) {
+      return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
     function distributeTabSeparatedValue(input, text) {
       const group = PASTE_ID_TO_GROUP[input.id];
       if (!group) return false;
-      const parts = text.split('\t'); // [プルダウン表示名, 会社名, 郵便番号, 住所, 電話番号]
+      const parts = text.split('\t').map(tsvUnquote); // [プルダウン表示名, 会社名, 郵便番号, 住所, 電話番号]
       pushUndoState();
       group.forEach(fid => {
         if (fid.endsWith('-zip')) setFieldValue(fid, parts[2] || '');
@@ -1984,6 +2040,11 @@
 
       input.onkeydown = function(e) {
         if (e.key === 'Enter') {
+          // 2行表示できる欄は、1回目のEnterだけ改行として使う（2回目以降は従来通り確定）
+          if (isMultilineField(input.id) && input.tagName === 'TEXTAREA' && !e.isComposing
+              && (input.value || '').split('\n').length < MULTILINE_MAX_LINES) {
+            return;
+          }
           e.preventDefault();
           input.blur();
         }
@@ -2003,6 +2064,10 @@
           const text = input.value;
           input.value = '';
           if (distributeTabSeparatedValue(input, text)) return;
+        }
+        if (isMultilineField(input.id) && input.tagName === 'TEXTAREA') {
+          const limited = limitToMaxLines(input.value);
+          if (limited !== input.value) input.value = limited;
         }
         if (input.classList.contains('qty-val')) {
           if (input.id && input.id.startsWith('f-qty-')) {
@@ -2157,7 +2222,10 @@
       reader.onload = function(evt) {
         try {
           const data = JSON.parse(evt.target.result);
-          if (data.layout && data.layout.length > 0) localStorage.setItem('manifest_v2026_shift_v27', JSON.stringify(data.layout));
+          if (data.layout && data.layout.length > 0) {
+            localStorage.setItem('manifest_v2026_shift_v27', JSON.stringify(data.layout));
+            localStorage.removeItem('manifest_layout_patch_version');
+          }
           if (data.masters) {
             currentMasters = data.masters;
             localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
@@ -2216,7 +2284,7 @@
       setSelectByMatch('sel-issue-person', currentMasters.persons, it => it.name === personName);
 
       const siteName = getFieldValue('f-site-name');
-      setSelectByMatch('sel-site', currentMasters.sites, it => (it.siteName || it.name) === siteName);
+      setSelectByMatch('sel-site', currentMasters.sites, it => normalizeLineBreaks(it.siteName || it.name) === normalizeLineBreaks(siteName));
 
       syncSlashMarkerVisuals();
 
@@ -2370,7 +2438,9 @@
         applyDataSnapshot(state.data);
       } else if (state.layout) {
         // 旧形式（位置情報込み）の保存データへの後方互換
-        applyLayoutArray(state.layout);
+        const legacyLayout = JSON.parse(JSON.stringify(state.layout));
+        patchLayoutArray(legacyLayout, 0);
+        applyLayoutArray(legacyLayout);
       }
       saveLayoutAndBg(false);
       try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
@@ -3148,6 +3218,20 @@
         // SVGの直線を描画してブラウザ背景非印刷設定時も100%斜線を出力 (左下から右上 ／)
         slash.innerHTML = '<svg><line x1="0" y1="100%" x2="100%" y2="0" stroke="black" stroke-width="1.5"/></svg>';
         box.appendChild(slash);
+      } else if ((type === 'input' || type === 'textarea') && isMultilineField(fieldId)) {
+        // 事業場の名称：Enterで任意の位置を改行し、2行まで表示できる入力欄
+        const area = document.createElement('textarea');
+        area.className = 'multiline-field';
+        area.setAttribute('wrap', 'off');
+        area.rows = 1;
+        if (fieldId) area.id = fieldId;
+        if (val) area.value = limitToMaxLines(val);
+        bindInputEvents(area, box);
+        area.style.fontFamily = (fontStyle && fontStyle.family) || '"MS 明朝", serif';
+        area.style.fontSize = (fontStyle && fontStyle.size) || '9pt';
+        area.style.fontWeight = (fontStyle && fontStyle.weight) || 'normal';
+        area.style.textAlign = (fontStyle && fontStyle.align) || 'left';
+        box.appendChild(area);
       } else if (type === 'input') {
         const input = document.createElement('input');
         input.type = 'text';
@@ -3197,6 +3281,12 @@
       }
     }
 
+    // 枠の大きさを変えた後、文字サイズと上下位置を合わせ直す
+    function refitBoxField(box) {
+      const f = box ? box.querySelector('input, textarea') : null;
+      if (f && typeof autoFitFont === 'function') autoFitFont(f);
+    }
+
     function makeDraggableAndResizable(el, resizer, resizerTL) {
       let startX = 0, startY = 0;
 
@@ -3225,6 +3315,7 @@
           document.onmouseup = function() { 
             document.onmousemove = null; 
             document.onmouseup = null; 
+            refitBoxField(el);
             saveLayoutAndBg(false);
           };
         };
@@ -3264,6 +3355,7 @@
           document.onmouseup = function() {
             document.onmousemove = null;
             document.onmouseup = null;
+            refitBoxField(el);
             saveLayoutAndBg(false);
           };
         };
@@ -3393,17 +3485,42 @@
       });
     }
 
+    // 配置の個別修正（Claudeが初期配置を直した枠だけを、保存済みの配置にも一度だけ反映する）
+    // 番号を上げると、各PCで次に開いた時に対象の枠だけが新しい位置・大きさに置き換わる（他の枠は触らない）
+    const LAYOUT_PATCH_VERSION = 1;
+    const LAYOUT_PATCHES = [
+      { version: 1, id: 'f-site-name', y: 32.2, h: 5.1 }  // 事業場の名称：2行表示用に枠を上下に拡大
+    ];
+    function patchLayoutArray(layout, fromVersion) {
+      let changed = false;
+      LAYOUT_PATCHES.forEach(p => {
+        if (p.version <= fromVersion) return;
+        const item = layout.find(b => b && b.id === p.id);
+        if (!item) return;
+        ['x', 'y', 'w', 'h'].forEach(k => {
+          if (typeof p[k] === 'number' && item[k] !== p[k]) { item[k] = p[k]; changed = true; }
+        });
+      });
+      return changed;
+    }
+
     function loadSavedLayout() {
       const savedData = localStorage.getItem('manifest_v2026_shift_v27');
+      const appliedVersion = parseInt(localStorage.getItem('manifest_layout_patch_version') || '0', 10);
       if (savedData) {
         try {
           const layout = JSON.parse(savedData);
           if (Array.isArray(layout) && layout.length >= 50) {
+            if (appliedVersion < LAYOUT_PATCH_VERSION && patchLayoutArray(layout, appliedVersion)) {
+              localStorage.setItem('manifest_v2026_shift_v27', JSON.stringify(layout));
+            }
+            localStorage.setItem('manifest_layout_patch_version', String(LAYOUT_PATCH_VERSION));
             applyLayoutArray(layout);
             return;
           }
         } catch(e) {}
       }
+      localStorage.setItem('manifest_layout_patch_version', String(LAYOUT_PATCH_VERSION));
       initDefaultLayout();
     }
 
@@ -3476,7 +3593,7 @@
         items.forEach((item, i) => {
           html += `<tr>
             <td class="col-displayname"><input class="col-medium" type="text" value="${item.name || ''}" onchange="updateMasterItem(${i}, 'name', this.value)" onpaste="handleMasterNamePaste(event, ${i})"></td>
-            <td><input class="col-wide" type="text" value="${item.siteName || ''}" onchange="updateMasterItem(${i}, 'siteName', this.value)"></td>
+            <td><textarea class="col-wide master-multiline" rows="2" wrap="off" title="改行したい位置でEnterを押すと、用紙でも同じ位置で2行に分かれます" onchange="updateMasterItem(${i}, 'siteName', limitToMaxLines(this.value))">${escapeHtmlText(item.siteName || '')}</textarea></td>
             <td><input class="col-narrow" type="text" value="${item.zip || ''}" onchange="updateMasterItem(${i}, 'zip', this.value)" onblur="handleMasterZipBlur(${i})"></td>
             <td><input class="col-wide" type="text" value="${item.addr || ''}" onchange="updateMasterItem(${i}, 'addr', this.value)"></td>
             <td><input class="col-narrow" type="text" value="${item.tel || ''}" onchange="updateMasterItem(${i}, 'tel', this.value)"></td>
@@ -3588,7 +3705,7 @@
     function distributeMasterRowPaste(idx, text) {
       const item = currentMasters[activeTab][idx];
       if (!item) return;
-      const parts = text.split('\t'); // [表示名, 会社名/現場名, 郵便番号, 住所, 電話番号]
+      const parts = text.split('\t').map(tsvUnquote); // [表示名, 会社名/現場名, 郵便番号, 住所, 電話番号]
       item.name = parts[0] || item.name;
       if ('siteName' in item) item.siteName = parts[1] || item.siteName;
       else item.compName = parts[1] || item.compName;
@@ -3640,7 +3757,7 @@
       const item = currentMasters[activeTab][idx];
       if (!item) return;
       const compOrSite = item.compName || item.siteName || '';
-      const text = [item.name || '', compOrSite, item.zip || '', item.addr || '', item.tel || ''].join('\t');
+      const text = [item.name || '', compOrSite, item.zip || '', item.addr || '', item.tel || ''].map(tsvQuote).join('\t');
       doCopyText(text);
     }
 
