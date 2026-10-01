@@ -509,8 +509,7 @@
     .slash-box svg line { stroke: #000000 !important; stroke-width: 1.5px !important; }
   }
 </style>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<!-- マスターは各PCごとに持つ運用のため、端末間共有（Firebase）は読み込まない -->
 </head>
 <body class="mode-input">
 
@@ -862,8 +861,8 @@
       ],
       "sites": [
             {
-                  "name": "打梨(発)本館便所改修工事及びこれに伴う除却工事",
-                  "siteName": "打梨(発)本館便所改修工事\n及びこれに伴う除却工事",
+                  "name": "打梨(発)本館便所改修工事およびこれに伴う除却工事",
+                  "siteName": "打梨(発)本館便所改修工事\nおよびこれに伴う除却工事",
                   "zip": "731-3844",
                   "addr": "広島県山県郡安芸太田町大字打梨632-6",
                   "tel": ""
@@ -1230,7 +1229,7 @@
 
     // マスターデータの「初期値バージョン」。Claudeがマスターの初期値を更新するたびにこの数字を1つ上げる。
     // ブラウザ側は、保存されているバージョンより新しければ「新しく追加された初期値だけ」を自動で取り込む
-    const MASTER_DATA_VERSION = 6;
+    const MASTER_DATA_VERSION = 7;
 
     let activeTab = 'emitters';
     let showDisplayNameCol = false;
