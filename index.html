@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>建設系廃棄物マニフェスト（A票）完全印字システム【動作確認】</title>
+<title>建設系廃棄物マニフェスト（A票）完全印字システム</title>
 <style>
   html, body {
     width: 297mm;
@@ -518,7 +518,6 @@
 
   <!-- コントロールパネル -->
   <div class="control-panel" id="main-control-panel">
-    <span style="font-size:10px; color:#6b7280;">動作確認</span>
     <button class="btn btn-mode-input" id="btn-toggle-mode" onclick="toggleMode()">🔒 入力モード (枠固定)</button>
     <button class="btn btn-amber" onclick="undoLastAction()">↩️ 戻す</button>
     <button class="btn btn-amber" onclick="redoNextAction()">▶️ 進む</button>
@@ -665,6 +664,17 @@
           <button class="btn btn-green" onclick="addMasterRow()">➕ 新規追加</button>
           <button class="btn" onclick="saveMasterData()" style="background:#16a34a; color:#ffffff; border:2px solid #15803d; font-size:15px; padding:10px 24px; border-radius:8px; box-shadow:0 3px 8px rgba(22,163,74,0.4);">💾 設定を保存</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- マスター画面を閉じる時の確認 -->
+  <div id="master-close-confirm" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:10050; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:10px; padding:22px 26px; min-width:300px; box-shadow:0 10px 30px rgba(0,0,0,0.35); text-align:center;">
+      <div style="font-size:16px; font-weight:bold; margin-bottom:18px;">マスターの変更内容を保存しますか？</div>
+      <div style="display:flex; gap:12px; justify-content:center;">
+        <button class="btn" onclick="answerMasterClose(true)" style="background:#16a34a; color:#fff; border:2px solid #15803d; font-size:15px; padding:8px 26px; border-radius:8px;">はい</button>
+        <button class="btn" onclick="answerMasterClose(false)" style="background:#e5e7eb; color:#374151; border:1px solid #9ca3af; font-size:15px; padding:8px 26px; border-radius:8px;">いいえ</button>
       </div>
     </div>
   </div>
@@ -852,8 +862,8 @@
       ],
       "sites": [
             {
-                  "name": "打梨(発)本館便所改修",
-                  "siteName": "打梨(発)本館便所改修工事",
+                  "name": "打梨(発)本館便所改修工事及びこれに伴う除却工事",
+                  "siteName": "打梨(発)本館便所改修工事\n及びこれに伴う除却工事",
                   "zip": "731-3844",
                   "addr": "広島県山県郡安芸太田町大字打梨632-6",
                   "tel": ""
@@ -913,7 +923,7 @@
                   "tel": "0826-28-1877"
             },
             {
-                  "name": "あさやま工業株式会社",
+                  "name": "あさやま工業(株)",
                   "compName": "あさやま工業株式会社",
                   "zip": "731-3502",
                   "addr": "広島県山県郡安芸太田町大字津浪29番地",
@@ -927,7 +937,7 @@
                   "tel": "0826-28-1880"
             },
             {
-                  "name": "株式会社河本組",
+                  "name": "(株)河本組",
                   "compName": "株式会社河本組",
                   "zip": "731-3612",
                   "addr": "広島県山県郡安芸太田町大字遊谷665番地1",
@@ -955,7 +965,7 @@
                   "tel": "0826-22-2122"
             },
             {
-                  "name": "西部環境有限会社",
+                  "name": "西部環境(有)",
                   "compName": "西部環境有限会社",
                   "zip": "731-3812",
                   "addr": "広島県山県郡安芸太田町大字寺領1512番地",
@@ -1044,14 +1054,14 @@
                   "tel": "0829-40-0353"
             },
             {
-                  "name": "ﾂﾈｲｼｶﾑﾃｯｸｽ(株)",
+                  "name": "ﾂﾈｲｼｶﾑﾃｯｸｽ(株) 本社",
                   "compName": "ツネイシカムテックス株式会社",
                   "zip": "720-0313",
                   "addr": "広島県福山市沼隈町大字常石1083番地",
                   "tel": "084-957-8521"
             },
             {
-                  "name": "ﾂﾈｲｼｶﾑﾃｯｸｽ(株) 福山",
+                  "name": "ﾂﾈｲｼｶﾑﾃｯｸｽ(株) 福山工場",
                   "compName": "ツネイシカムテックス(株) 福山工場",
                   "zip": "721-0956",
                   "addr": "広島県福山市箕沖町107-5",
@@ -1077,6 +1087,13 @@
                   "zip": "731-3831",
                   "addr": "広島県山県郡安芸太田町大字川手字田之原1496番地",
                   "tel": "0826-28-2317"
+            },
+            {
+                  "name": "(株)桑原組湯来ﾘｻｸﾙ",
+                  "compName": "(株)桑原組湯来リサイクルパーク",
+                  "zip": "738-0511",
+                  "addr": "広島県広島市佐伯区湯来町大字葛原319",
+                  "tel": "0829-40-5522"
             },
             {
                   "name": "広島舗材(株)",
@@ -1137,11 +1154,25 @@
                   "tel": "052-324-9088"
             },
             {
+                  "name": "みつぎ産業(株)",
+                  "compName": "みつぎ産業株式会社",
+                  "zip": "734-0004",
+                  "addr": "広島県広島市南区宇品神田3丁目6-18",
+                  "tel": "082-251-6368"
+            },
+            {
                   "name": "(株)河本組",
                   "compName": "株式会社河本組",
                   "zip": "731-3612",
                   "addr": "広島県山県郡安芸太田町大字遊谷665番地1",
                   "tel": "0826-28-2317"
+            },
+            {
+                  "name": "(株)桑原組",
+                  "compName": "株式会社桑原組",
+                  "zip": "733-0812",
+                  "addr": "広島県広島市西区己斐本町3丁目17-24",
+                  "tel": "082-272-6006"
             },
             {
                   "name": "広島舗材(株)",
@@ -1181,14 +1212,14 @@
       ],
       "tsSites": [
             {
-                  "name": "(有)西部ﾊﾟﾌﾞﾘｯｸ 下筒賀施設",
+                  "name": "(有)西部ﾊﾟﾌﾞﾘｯｸ 下筒賀",
                   "compName": "(有)西部パブリック 下筒賀施設",
                   "zip": "731-3663",
                   "addr": "広島県山県郡安芸太田町大字下筒賀1113番地",
                   "tel": "0826-28-2831"
             },
             {
-                  "name": "西部環境(有)",
+                  "name": "西部環境有限会社",
                   "compName": "西部環境有限会社",
                   "zip": "731-3821",
                   "addr": "広島県山県郡安芸太田町大字土居317-1、318-1",
@@ -1199,7 +1230,7 @@
 
     // マスターデータの「初期値バージョン」。Claudeがマスターの初期値を更新するたびにこの数字を1つ上げる。
     // ブラウザ側は、保存されているバージョンより新しければ「新しく追加された初期値だけ」を自動で取り込む
-    const MASTER_DATA_VERSION = 4;
+    const MASTER_DATA_VERSION = 6;
 
     let activeTab = 'emitters';
     let showDisplayNameCol = false;
@@ -1394,12 +1425,80 @@
     }
 
     // クラウド（Firestore）からマスターデータを取得し、手元のデータと入れ替える
+    // 最後にクラウドと一致していたマスターの内容（「このPCで何を変えたか」を割り出す基準）
+    let cloudBaseline = null;
+    const MASTER_MATCH_FIELDS = {
+      emitters: 'compName', sites: 'siteName', depts: 'name', persons: 'name', surnames: 'name',
+      transporters: 'compName', vehicles: 'no', vehicles2: 'no', disposals: 'compName', dispComps: 'compName', tsSites: 'compName'
+    };
+    function masterItemKey(cat, it) {
+      if (!it) return '';
+      const f = MASTER_MATCH_FIELDS[cat] || 'name';
+      return normalizeLineBreaks(String(it[f] || it.name || '')).trim();
+    }
+    function stableStringify(o) {
+      return JSON.stringify(Object.keys(o || {}).sort().reduce((a, k) => { a[k] = o[k]; return a; }, {}));
+    }
+    function sortMastersObject(m) {
+      Object.keys(m).forEach(key => {
+        if (!Array.isArray(m[key])) return;
+        if (key === 'vehicles' || key === 'vehicles2') {
+          m[key].sort((a, b) => (a.type || '').localeCompare(b.type || '', 'ja') || (a.no || '').localeCompare(b.no || '', 'ja'));
+        } else if (key === 'transporters') {
+          m[key].sort((a, b) => {
+            const aT = (a.name || '').includes('筒賀建設'), bT = (b.name || '').includes('筒賀建設');
+            if (aT && !bT) return -1;
+            if (bT && !aT) return 1;
+            return japaneseNameCompare(a.name, b.name);
+          });
+        } else {
+          m[key].sort((a, b) => japaneseNameCompare(a.name, b.name));
+        }
+      });
+      return m;
+    }
+    // クラウドの最新(remote)に、このPCで変えた部分(baseとの差)だけを重ねる
+    function mergeLocalChangesIntoRemote(remote, local, base) {
+      const out = {};
+      const cats = new Set([...Object.keys(remote || {}), ...Object.keys(local || {})]);
+      cats.forEach(cat => {
+        let result = Array.isArray(remote && remote[cat]) ? remote[cat].map(x => Object.assign({}, x)) : [];
+        const l = Array.isArray(local && local[cat]) ? local[cat] : [];
+        const b = base && Array.isArray(base[cat]) ? base[cat] : null;
+        const bMap = new Map();
+        if (b) b.forEach(it => { const k = masterItemKey(cat, it); if (k) bMap.set(k, it); });
+        const lMap = new Map();
+        l.forEach(it => { const k = masterItemKey(cat, it); if (k) lMap.set(k, it); });
+        if (b) {
+          const deleted = new Set([...bMap.keys()].filter(k => !lMap.has(k)));
+          result = result.filter(it => !deleted.has(masterItemKey(cat, it)));
+        }
+        lMap.forEach((it, k) => {
+          const baseItem = b ? bMap.get(k) : null;
+          if (baseItem && stableStringify(baseItem) === stableStringify(it)) return; // このPCでは変えていない
+          const i = result.findIndex(x => masterItemKey(cat, x) === k);
+          if (i < 0) { result.push(Object.assign({}, it)); return; }
+          if (!baseItem) { result[i] = Object.assign({}, it); return; }
+          // 同じ会社を別のPCでも直していた場合に備え、このPCで変えた項目だけを上書きする
+          const target = result[i];
+          new Set([...Object.keys(baseItem), ...Object.keys(it)]).forEach(f => {
+            if (baseItem[f] !== it[f]) {
+              if (it[f] === undefined) delete target[f]; else target[f] = it[f];
+            }
+          });
+        });
+        out[cat] = result;
+      });
+      return sortMastersObject(out);
+    }
+
     async function pullMasterFromCloud() {
       if (!firestoreDb) return false;
       try {
         const doc = await firestoreDb.collection('manifestMasters').doc('shared').get();
         if (doc.exists && doc.data() && doc.data().masters) {
           currentMasters = doc.data().masters;
+          cloudBaseline = JSON.parse(JSON.stringify(currentMasters));
           localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
           return true;
         }
@@ -1410,14 +1509,30 @@
       }
     }
 
-    // 今のマスターデータをクラウド（Firestore）にアップロードする
-    async function pushMasterToCloud() {
+    // 保存の直前にクラウドの最新を読み込み直し、このPCで変えた部分だけを重ねてアップロードする
+    // （別のPCで追加・修正された内容を、古い一覧で上書きして消してしまわないため）
+    let masterPushChain = Promise.resolve();
+    function pushMasterToCloud() {
+      masterPushChain = masterPushChain.then(doPushMasterToCloud, doPushMasterToCloud);
+      return masterPushChain;
+    }
+    async function doPushMasterToCloud() {
       if (!firestoreDb) return false;
       try {
-        await firestoreDb.collection('manifestMasters').doc('shared').set({
-          masters: currentMasters,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
+        const ref = firestoreDb.collection('manifestMasters').doc('shared');
+        const doc = await ref.get();
+        const remote = (doc.exists && doc.data() && doc.data().masters) ? doc.data().masters : null;
+        const merged = remote ? mergeLocalChangesIntoRemote(remote, currentMasters, cloudBaseline)
+                              : JSON.parse(JSON.stringify(currentMasters));
+        await ref.set({ masters: merged, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        // マスター画面を編集中でなければ、他のPCの変更も含めた最新を手元に反映する
+        if (!isMasterModalOpen()) {
+          currentMasters = JSON.parse(JSON.stringify(merged));
+          cloudBaseline = JSON.parse(JSON.stringify(merged));
+          localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
+          try { initMasterSelects(); } catch (e) { console.error(e); }
+          try { syncTopPanelFromFields(); } catch (e) { console.error(e); }
+        }
         return true;
       } catch (e) {
         console.error('Firestoreへの保存に失敗しました（オフラインの可能性）:', e);
@@ -1878,7 +1993,7 @@
       } else {
         const ok = confirm(`「${nameVal}」はマスターに登録されていません。\n\nこの内容をマスターに保存して、次回から選べるようにしますか？`);
         if (!ok) return;
-        const entry = { name: nameVal };
+        const entry = { name: masterInfo.nameField === 'siteName' ? normalizeLineBreaks(nameVal) : autoShortenCompanyName(nameVal) };
         entry[masterInfo.nameField] = nameVal;
         entry.zip = curZip; entry.addr = curAddr; entry.tel = curTel;
         currentMasters[masterInfo.key].push(entry);
@@ -3539,17 +3654,39 @@
 
     let masterModalDirty = false;
 
+    let masterModalSnapshot = null; // 開いた時点のマスター（「保存しない」で閉じた時に元へ戻すため）
     function openMasterModal() {
       masterModalDirty = false;
+      masterModalSnapshot = JSON.parse(JSON.stringify(currentMasters));
       document.getElementById('master-modal').style.display = 'flex';
       renderTab();
     }
-    function closeMasterModal() {
-      if (masterModalDirty) {
-        const ok = confirm('⚠️ 「設定を保存」を押さずに閉じようとしています。\n\nここまでの変更内容が失われます。よろしいですか？\n\n（保存する場合は、キャンセルしてから「💾 設定を保存」を押してください）');
-        if (!ok) return;
-      }
+    function isMasterModalOpen() {
+      const m = document.getElementById('master-modal');
+      return !!(m && m.style.display === 'flex');
+    }
+    function hideMasterModal() {
       document.getElementById('master-modal').style.display = 'none';
+      const c = document.getElementById('master-close-confirm');
+      if (c) c.style.display = 'none';
+      masterModalSnapshot = null;
+    }
+    // ✖ボタン：変更があれば「保存しますか？」と聞く
+    function closeMasterModal() {
+      if (!masterModalDirty) { hideMasterModal(); return; }
+      document.getElementById('master-close-confirm').style.display = 'flex';
+    }
+    function answerMasterClose(save) {
+      document.getElementById('master-close-confirm').style.display = 'none';
+      if (save) {
+        saveMasterData();
+      } else {
+        if (masterModalSnapshot) currentMasters = masterModalSnapshot;
+        masterModalDirty = false;
+        initMasterSelects();
+        hideMasterModal();
+        showToast('変更を保存せずに閉じました');
+      }
     }
     function switchTab(tab) {
       activeTab = tab;
@@ -3653,7 +3790,8 @@
     }
 
     // 正式名称から、プルダウン表示用の短い名称を自動生成する（会社形態の略称化＋末尾のよくある施設名の省略）
-    function autoShortenCompanyName(compName) {
+    // 以前の短縮ルール（自動で付けた略称かどうかの判定にだけ使う）
+    function legacyShortenCompanyName(compName) {
       if (!compName) return '';
       let s = compName.replace(/株式会社/g, '(株)').replace(/有限会社/g, '(有)').replace(/合同会社/g, '(合)');
       const trailingSuffixes = ['木くず・がれき類破砕施設', '木くず･がれき類破砕施設', '破砕施設', '処分場', '事業所', '工場', '施設'];
@@ -3664,6 +3802,55 @@
         }
       }
       return s.trim();
+    }
+
+    // カタカナを半角カタカナにする（濁点・半濁点も対応）
+    const HALF_KANA_MAP = (() => {
+      const full = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンァィゥェォッャュョー・';
+      const half = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜｦﾝｧｨｩｪｫｯｬｭｮｰ･';
+      const m = {};
+      for (let i = 0; i < full.length; i++) m[full[i]] = half[i];
+      return m;
+    })();
+    function toHalfWidthKana(s) {
+      return (s || '').replace(/[\u30A1-\u30F4\u30FB\u30FC]/g, ch => {
+        if (ch === 'ヴ') return 'ｳﾞ';
+        const d = ch.normalize('NFD');
+        const base = HALF_KANA_MAP[d[0]];
+        if (!base) return ch;
+        if (d[1] === '\u3099') return base + 'ﾞ';
+        if (d[1] === '\u309A') return base + 'ﾟ';
+        return base;
+      });
+    }
+
+    // プルダウン用の略称を、できるだけ短く自動で作る
+    function autoShortenCompanyName(compName) {
+      if (!compName) return '';
+      let s = String(compName).replace(/[\r\n]+/g, '');
+      s = s.replace(/株式会社/g, '(株)').replace(/有限会社/g, '(有)').replace(/合同会社/g, '(合)')
+           .replace(/合資会社/g, '(資)').replace(/合名会社/g, '(名)')
+           .replace(/一般社団法人/g, '(一社)').replace(/一般財団法人/g, '(一財)');
+      s = s.replace(/（/g, '(').replace(/）/g, ')');
+      const trailingSuffixes = ['木くず・がれき類破砕施設', '木くず･がれき類破砕施設', '破砕施設', '処分場', '事業所', '工場', '施設'];
+      for (const suf of trailingSuffixes) {
+        if (s.endsWith(suf)) {
+          s = s.slice(0, s.length - suf.length).replace(/[\s　]+$/, '');
+          break;
+        }
+      }
+      s = s.replace(/[Ａ-Ｚａ-ｚ０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
+      s = toHalfWidthKana(s);
+      s = s.replace(/[\s　]+/g, ' ').trim();
+      return s;
+    }
+
+    // 略称が「自動で付けたもの（または空）」なら、正式名称の変更に合わせて付け直す。手で変えた略称は守る
+    function displayNameFollowsSource(item, sourceField, oldSource) {
+      const name = (item.name || '').trim();
+      if (name === '') return true;
+      if (sourceField === 'siteName') return name === normalizeLineBreaks(oldSource || '');
+      return name === autoShortenCompanyName(oldSource) || name === legacyShortenCompanyName(oldSource) || name === (oldSource || '');
     }
 
     async function handleMasterZipBlur(idx) {
@@ -3683,13 +3870,17 @@
         distributeMasterRowPaste(idx, val);
         return;
       }
+      const oldSource = currentMasters[activeTab][idx][key];
       currentMasters[activeTab][idx][key] = val;
       masterModalDirty = true;
-      if (key === 'compName') {
+      if (key === 'compName' || key === 'siteName') {
         const item = currentMasters[activeTab][idx];
-        if (!item.name || item.name.trim() === '') {
-          item.name = autoShortenCompanyName(val);
-          renderTab();
+        if (displayNameFollowsSource(item, key, oldSource)) {
+          const next = key === 'siteName' ? normalizeLineBreaks(val) : autoShortenCompanyName(val);
+          if (item.name !== next) {
+            item.name = next;
+            renderTab();
+          }
         }
       }
       if ((key === 'type' || key === 'no') && (activeTab === 'vehicles' || activeTab === 'vehicles2')) {
@@ -3811,7 +4002,7 @@
       localStorage.setItem('manifest_masters', JSON.stringify(currentMasters));
       initMasterSelects();
       masterModalDirty = false;
-      closeMasterModal();
+      hideMasterModal();
       pushMasterToCloud();
       showToast('✅ マスターデータを保存し整列しました！');
     }
